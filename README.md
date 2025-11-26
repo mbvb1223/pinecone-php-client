@@ -90,6 +90,10 @@ $pinecone = new Pinecone('your-api-key', [
 - PHP 8.1 or higher
 - Guzzle HTTP client
 
+## Code coverage
+
+<a href="https://mbvb1223.github.io/pincone-php-client/" target="_blank" rel="noopener noreferrer">https://mbvb1223.github.io/pincone-php-client/</a>
+
 ## License
 
 This project is licensed under the Apache-2.0 License.
