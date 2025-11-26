@@ -48,6 +48,7 @@ class AssistantClient
     {
         try {
             $response = $this->httpClient->get('/assistants');
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list assistants: ' . $e->getMessage(), 0, $e);
@@ -58,6 +59,7 @@ class AssistantClient
     {
         try {
             $response = $this->httpClient->get("/assistants/{$assistantName}");
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to describe assistant: ' . $e->getMessage(), 0, $e);

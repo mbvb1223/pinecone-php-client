@@ -100,6 +100,7 @@ class DataPlane
             }
 
             $response = $this->httpClient->get('/vectors/fetch?' . http_build_query($params));
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to fetch vectors: ' . $e->getMessage(), 0, $e);

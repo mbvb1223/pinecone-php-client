@@ -65,6 +65,7 @@ class ControlPlane
         try {
             $response = $this->httpClient->get("/indexes/{$name}");
             $data = $this->handleResponse($response);
+
             return Index::fromArray($data);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to describe index: ' . $e->getMessage(), 0, $e);

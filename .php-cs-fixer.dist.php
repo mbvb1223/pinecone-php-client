@@ -7,5 +7,8 @@ $finder = (new PhpCsFixer\Finder())
 return (new PhpCsFixer\Config())
     ->setRules([
         '@PSR12' => true,
+        'blank_line_before_statement' => [
+            'statements' => ['return'],
+        ],
     ])
     ->setFinder($finder);

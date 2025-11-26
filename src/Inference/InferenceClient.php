@@ -69,6 +69,7 @@ class InferenceClient
     {
         try {
             $response = $this->httpClient->get('/models');
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list models: ' . $e->getMessage(), 0, $e);
