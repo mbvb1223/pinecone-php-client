@@ -75,4 +75,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install the package
-        run: composer require mbvb1223/pinecone-php-client --no-cache --prefer-dist --no-progress
+        run: composer require mbvb1223/pinecone-php-client:dev-dev --no-cache --prefer-dist --no-progress
