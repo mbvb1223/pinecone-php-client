@@ -1,13 +1,13 @@
 # Pinecone PHP Client
 
-The official PHP SDK for [Pinecone](https://www.pinecone.io) vector database.
+A PHP SDK for [Pinecone](https://www.pinecone.io) vector database.
 
 ## Installation
 
 Install the package via Composer:
 
 ```bash
-composer require pinecone/pinecone-php-client
+composer require mbvb1223/pinecone-php-client
 ```
 
 ## Quick Start
