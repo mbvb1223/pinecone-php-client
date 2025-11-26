@@ -18,7 +18,6 @@ class ListIndexesTest extends TestCase
     {
         parent::setUp();
 
-        // Skip integration tests if no API key is provided
         $apiKey = getenv('PINECONE_API_KEY') ?: '';
         die($apiKey);
         if (!$apiKey) {
