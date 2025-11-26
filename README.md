@@ -92,7 +92,7 @@ $pinecone = new Pinecone('your-api-key', [
 
 ## Code coverage
 
-<a href="https://mbvb1223.github.io/pincone-php-client/" target="_blank" rel="noopener noreferrer">https://mbvb1223.github.io/pincone-php-client/</a>
+<a href="https://mbvb1223.github.io/pinecone-php-client/" target="_blank" rel="noopener noreferrer">https://mbvb1223.github.io/pinecone-php-client/</a>
 
 ## License
 
