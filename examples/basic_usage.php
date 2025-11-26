@@ -6,7 +6,7 @@ use Mbvb1223\Pinecone\Pinecone;
 use Mbvb1223\Pinecone\Errors\PineconeException;
 
 try {
-    // Initialize Pinecone client
+    // Initialize Pinecone client.
     $pinecone = new Pinecone();
 
     // List existing indexes
