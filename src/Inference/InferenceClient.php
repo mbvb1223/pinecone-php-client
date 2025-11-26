@@ -79,7 +79,7 @@ class InferenceClient
     {
         $statusCode = $response->getStatusCode();
         $body = $response->getBody()->getContents();
-        
+
         if ($statusCode >= 400) {
             $data = json_decode($body, true) ?? [];
             $message = $data['message'] ?? 'API request failed';

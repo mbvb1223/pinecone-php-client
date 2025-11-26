@@ -21,9 +21,9 @@ class DataPlane
     {
         $this->config = $config;
         $this->indexInfo = $indexInfo;
-        
+
         $host = $indexInfo['host'] ?? $this->buildIndexHost($indexInfo['name']);
-        
+
         $this->httpClient = new Client([
             'base_uri' => "https://{$host}",
             'timeout' => $config->getTimeout(),
@@ -187,7 +187,7 @@ class DataPlane
     {
         $statusCode = $response->getStatusCode();
         $body = $response->getBody()->getContents();
-        
+
         if ($statusCode >= 400) {
             $data = json_decode($body, true) ?? [];
             $message = $data['message'] ?? 'API request failed';

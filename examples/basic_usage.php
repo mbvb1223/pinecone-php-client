@@ -18,7 +18,7 @@ try {
 
     // Create a new index (if needed)
     $indexName = 'example-index';
-    
+
     echo "\nCreating index '{$indexName}'...\n";
     $pinecone->createIndex($indexName, [
         'dimension' => 1536,
@@ -47,7 +47,7 @@ try {
             'metadata' => ['category' => 'A', 'year' => 2023]
         ],
         [
-            'id' => 'vec2', 
+            'id' => 'vec2',
             'values' => array_fill(0, 1536, 0.2),
             'metadata' => ['category' => 'B', 'year' => 2024]
         ],
