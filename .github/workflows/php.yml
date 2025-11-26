@@ -39,6 +39,8 @@ jobs:
       run: composer run-script check
 
     - name: Run test suite
+      env:
+        PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
       run: composer run-script test
 
     - name: Run test suite with coverage
