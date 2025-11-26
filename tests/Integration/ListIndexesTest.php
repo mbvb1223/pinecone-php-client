@@ -19,8 +19,6 @@ class ListIndexesTest extends TestCase
         parent::setUp();
 
         $apiKey = getenv('PINECONE_API_KEY') ?: '';
-        var_dump($apiKey);
-        die();
         if (!$apiKey) {
             $this->markTestSkipped('PINECONE_API_KEY environment variable not set');
         }
