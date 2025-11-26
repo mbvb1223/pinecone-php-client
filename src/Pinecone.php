@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Pinecone;
+namespace Mbvb1223\Pinecone;
 
-use Pinecone\Control\ControlPlane;
-use Pinecone\Data\DataPlane;
-use Pinecone\Inference\InferenceClient;
-use Pinecone\Assistant\AssistantClient;
-use Pinecone\Utils\Configuration;
-use Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Control\ControlPlane;
+use Mbvb1223\Pinecone\Data\DataPlane;
+use Mbvb1223\Pinecone\Inference\InferenceClient;
+use Mbvb1223\Pinecone\Assistant\AssistantClient;
+use Mbvb1223\Pinecone\Utils\Configuration;
+use Mbvb1223\Pinecone\Errors\PineconeException;
 
 class Pinecone
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Pinecone\Utils;
+namespace Mbvb1223\Pinecone\Utils;
 
-use Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Errors\PineconeException;
 
 class Configuration
 {

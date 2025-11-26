@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Pinecone\Data;
+namespace Mbvb1223\Pinecone\Data;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Pinecone\Utils\Configuration;
-use Pinecone\Errors\PineconeApiException;
-use Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Utils\Configuration;
+use Mbvb1223\Pinecone\Errors\PineconeApiException;
+use Mbvb1223\Pinecone\Errors\PineconeException;
 use Psr\Http\Message\ResponseInterface;
 
 class DataPlane

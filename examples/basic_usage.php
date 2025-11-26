@@ -2,8 +2,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Pinecone\Pinecone;
-use Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Pinecone;
+use Mbvb1223\Pinecone\Errors\PineconeException;
 
 try {
     // Initialize Pinecone client

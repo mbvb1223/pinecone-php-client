@@ -16,7 +16,7 @@ composer require mbvb1223/pinecone-php-client
 <?php
 require 'vendor/autoload.php';
 
-use Pinecone\Pinecone;
+use Mbvb1223\Pinecone\Pinecone;
 
 // Initialize client
 $pinecone = new Pinecone('your-api-key');

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pinecone\Errors;
+namespace Mbvb1223\Pinecone\Errors;
 
 use Exception;
 
