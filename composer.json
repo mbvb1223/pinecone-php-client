@@ -44,13 +44,9 @@
     }
   },
   "scripts": {
-    "test": "phpunit",
-    "test-coverage": "phpunit --coverage-html coverage",
-    "phpstan": "phpstan analyse src --level=8",
-    "cs-check": "phpcs src tests --standard=PSR12",
-    "cs-fix": "phpcbf src tests --standard=PSR12",
-    "php-cs-fixer": "php-cs-fixer fix --diff --dry-run",
-    "php-cs-fixer-fix": "php-cs-fixer fix --diff"
+    "fix": "vendor/bin/php-cs-fixer fix . -vvv",
+    "check": "vendor/bin/php-cs-fixer check . -vvv",
+    "test": "vendor/bin/phpunit --testdox"
   },
   "config": {
     "sort-packages": true,
