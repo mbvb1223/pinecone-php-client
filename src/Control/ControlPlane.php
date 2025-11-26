@@ -33,7 +33,7 @@ class ControlPlane
         try {
             $response = $this->httpClient->get('/indexes');
             $data = $this->handleResponse($response);
-
+            dd($data['indexes']);
             return Index::listmap($data['indexes'] ?? []);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list indexes: ' . $e->getMessage(), 0, $e);

@@ -12,14 +12,15 @@ class Index
 
     public function __construct(
         public readonly string $name,
-        public readonly int $dimension,
-        public readonly string $metric,
         public readonly IndexStatus $status,
         public readonly string $host,
         public readonly IndexSpec $spec,
-        public readonly ?string $vectorType = null,
-        public readonly ?string $deletionProtection = null,
-        public readonly ?array $tags = null
+        public readonly string $metric = 'cosine',
+        public readonly string $vectorType = 'dense',
+        public readonly string $deletionProtection = 'disabled',
+        public readonly ?int $dimension = null,
+        public readonly ?array $tags = null,
+        public readonly ?IndexEmbed $embed = null
     ) {
     }
 }

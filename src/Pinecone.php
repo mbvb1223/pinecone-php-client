@@ -6,6 +6,7 @@ namespace Mbvb1223\Pinecone;
 
 use Mbvb1223\Pinecone\Control\ControlPlane;
 use Mbvb1223\Pinecone\Data\DataPlane;
+use Mbvb1223\Pinecone\DTOs\Index;
 use Mbvb1223\Pinecone\Inference\InferenceClient;
 use Mbvb1223\Pinecone\Assistant\AssistantClient;
 use Mbvb1223\Pinecone\Utils\Configuration;
@@ -22,6 +23,9 @@ class Pinecone
         $this->controlPlane = new ControlPlane($this->config);
     }
 
+    /**
+     * @return Index[]
+     */
     public function listIndexes(): array
     {
         return $this->controlPlane->listIndexes();

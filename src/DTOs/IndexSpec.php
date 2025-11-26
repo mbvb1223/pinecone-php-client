@@ -12,7 +12,8 @@ class IndexSpec
 
     public function __construct(
         public readonly ?ServerlessSpec $serverless = null,
-        public readonly ?PodSpec $pod = null
+        public readonly ?PodSpec $pod = null,
+        public readonly ?ByocSpec $byoc = null
     ) {
     }
 }
