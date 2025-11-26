@@ -20,6 +20,7 @@ class ListIndexesTest extends TestCase
 
         // Skip integration tests if no API key is provided
         $apiKey = $_ENV['PINECONE_API_KEY'] ?? '';
+        dd($apiKey);
         if (!$apiKey) {
             $this->markTestSkipped('PINECONE_API_KEY environment variable not set');
         }
