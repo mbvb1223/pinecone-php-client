@@ -9,7 +9,6 @@ use Mbvb1223\Pinecone\Data\DataPlane;
 use Mbvb1223\Pinecone\Inference\InferenceClient;
 use Mbvb1223\Pinecone\Assistant\AssistantClient;
 use Mbvb1223\Pinecone\Utils\Configuration;
-use Mbvb1223\Pinecone\Errors\PineconeException;
 
 class Pinecone
 {

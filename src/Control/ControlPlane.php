@@ -6,6 +6,8 @@ namespace Mbvb1223\Pinecone\Control;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Mbvb1223\Pinecone\DTOs\Index;
+use Mbvb1223\Pinecone\DTOs\IndexCollection;
 use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
@@ -30,7 +32,9 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->get('/indexes');
-            return $this->handleResponse($response);
+            $data = $this->handleResponse($response);
+
+            return Index::listmap($data['indexes'] ?? []);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list indexes: ' . $e->getMessage(), 0, $e);
         }
@@ -56,11 +60,12 @@ class ControlPlane
         }
     }
 
-    public function describeIndex(string $name): array
+    public function describeIndex(string $name): Index
     {
         try {
             $response = $this->httpClient->get("/indexes/{$name}");
-            return $this->handleResponse($response);
+            $data = $this->handleResponse($response);
+            return Index::fromArray($data);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to describe index: ' . $e->getMessage(), 0, $e);
         }

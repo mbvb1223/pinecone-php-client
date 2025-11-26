@@ -36,6 +36,7 @@ try {
     sleep(5);
 
     // Get index reference
+    /** @var \Mbvb1223\Pinecone\Data\DataPlane $index */
     $index = $pinecone->index($indexName);
 
     // Upsert some vectors

@@ -22,7 +22,7 @@ class DataPlane
         $this->config = $config;
         $this->indexInfo = $indexInfo;
 
-        $host = $indexInfo['host'] ?? $this->buildIndexHost($indexInfo['name']);
+        $host = $this->indexInfo['host'] ?? $this->buildIndexHost($this->indexInfo['name']);
 
         $this->httpClient = new Client([
             'base_uri' => "https://{$host}",
