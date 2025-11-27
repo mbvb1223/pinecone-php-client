@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Mbvb1223\Pinecone\Tests\Integration;
+namespace Mbvb1223\Pinecone\Tests\Feature;
 
-use Mbvb1223\Pinecone\Tests\Integration\Base\BaseIntegrationTestCase;
+use Mbvb1223\Pinecone\Tests\Feature\Base\BaseIntegrationTestCase;
 
 class ListIndexesTest extends BaseIntegrationTestCase
 {

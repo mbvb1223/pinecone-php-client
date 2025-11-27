@@ -21,7 +21,7 @@ class Pinecone
         $this->controlPlane = new ControlPlane($this->config);
     }
 
-    // Factory methods to get sub-components
+    // ===== Factory methods to get sub-components =====
     public function index(string $name): Index
     {
         $indexInfo = $this->describeIndex($name);
@@ -41,6 +41,7 @@ class Pinecone
         return new AssistantClient($this->config, $assistantInfo);
     }
 
+    // ===== Index control plane methods =====
     public function listIndexes(): array
     {
         return $this->controlPlane->listIndexes();
@@ -71,7 +72,7 @@ class Pinecone
         return $this->controlPlane->configureIndex($name, $requestData);
     }
 
-    // Collection control plane methods
+    // ===== Collection control plane methods =====
     public function createCollection(array $config): array
     {
         return $this->controlPlane->createCollection($config);
@@ -92,7 +93,7 @@ class Pinecone
         $this->controlPlane->deleteCollection($name);
     }
 
-    // Backup control plane methods
+    // ===== Backup control plane methods =====
     public function createBackup(array $config): array
     {
         return $this->controlPlane->createBackup($config);
@@ -113,7 +114,7 @@ class Pinecone
         $this->controlPlane->deleteBackup($id);
     }
 
-    // Restore operations
+    // ===== Restore control plane methods =====
     public function listRestoreJobs(array $params = []): array
     {
         return $this->controlPlane->listRestoreJobs($params);
@@ -124,7 +125,7 @@ class Pinecone
         return $this->controlPlane->describeRestoreJob($id);
     }
 
-    // Assistant control plane methods
+    // ===== Assistant control plane methods =====
     public function createAssistant(array $config): array
     {
         return $this->controlPlane->createAssistant($config);

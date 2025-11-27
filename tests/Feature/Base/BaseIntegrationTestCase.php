@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Mbvb1223\Pinecone\Tests\Integration\Base;
+namespace Mbvb1223\Pinecone\Tests\Feature\Base;
 
 use Mbvb1223\Pinecone\Pinecone;
 use PHPUnit\Framework\TestCase;
