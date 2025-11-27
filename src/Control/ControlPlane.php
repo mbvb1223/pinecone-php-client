@@ -49,29 +49,7 @@ class ControlPlane
     public function createForModel(string $name, array $requestData): array
     {
         try {
-            $payload = [
-                'name' => $name,
-                'cloud' => $requestData['cloud'],
-                'region' => $requestData['region'],
-                'embed' => $requestData['embed'],
-            ];
-
-            // Add optional fields if provided
-            if (isset($requestData['deletion_protection'])) {
-                $payload['deletion_protection'] = $requestData['deletion_protection'];
-            }
-
-            if (isset($requestData['tags'])) {
-                $payload['tags'] = $requestData['tags'];
-            }
-
-            if (isset($requestData['schema'])) {
-                $payload['schema'] = $requestData['schema'];
-            }
-
-            if (isset($requestData['read_capacity'])) {
-                $payload['read_capacity'] = $requestData['read_capacity'];
-            }
+            $payload = array_merge(['name' => $name], $requestData);
 
             $response = $this->httpClient->post('/indexes/create-for-model', ['json' => $payload]);
 
