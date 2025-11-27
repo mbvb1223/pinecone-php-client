@@ -169,9 +169,7 @@ class DataPlane
                 $payload['filter'] = $filter;
             }
 
-            $response = $this->httpClient->post('/describe_index_stats', [
-                'json' => $payload,
-            ]);
+            $response = $this->httpClient->post('/describe_index_stats', ['json' => (object) $payload]);
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {

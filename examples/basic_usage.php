@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mbvb1223\Pinecone\Pinecone;
+use Mbvb1223\Pinecone\Utils\Configuration;
 
 function listIndexes()
 {
@@ -91,4 +92,17 @@ function configureIndex()
     var_dump($index);
 }
 
-configureIndex();
+function describeIndexStats()
+{
+    $pinecone = new Pinecone();
+
+    $index = $pinecone->describeIndex('test-integrations-php');
+
+    $config = new Configuration();
+    $dataPlan = new \Mbvb1223\Pinecone\Data\DataPlane($config, $index);
+    $data = $dataPlan->describeIndexStats();
+
+    var_dump($data);
+}
+
+describeIndexStats();

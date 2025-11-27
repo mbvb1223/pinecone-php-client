@@ -114,6 +114,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->patch("/indexes/{$name}", ['json' => $requestData]);
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to configure index: $name. {$e->getMessage()}", 0, $e);
