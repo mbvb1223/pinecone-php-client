@@ -126,6 +126,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->post('/collections', ['json' => $config]);
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to create collection: ' . $e->getMessage(), 0, $e);
@@ -137,6 +138,7 @@ class ControlPlane
         try {
             $response = $this->httpClient->get('/collections');
             $data = $this->handleResponse($response);
+
             return $data['collections'] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list collections: ' . $e->getMessage(), 0, $e);
@@ -147,6 +149,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->get("/collections/{$name}");
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to describe collection: $name. {$e->getMessage()}", 0, $e);
@@ -168,6 +171,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->post('/backups', ['json' => $config]);
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to create backup: ' . $e->getMessage(), 0, $e);
@@ -179,6 +183,7 @@ class ControlPlane
         try {
             $response = $this->httpClient->get('/backups');
             $data = $this->handleResponse($response);
+
             return $data['backups'] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list backups: ' . $e->getMessage(), 0, $e);
@@ -189,6 +194,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->get("/backups/{$id}");
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to describe backup: $id. {$e->getMessage()}", 0, $e);
@@ -212,6 +218,7 @@ class ControlPlane
             $query = !empty($params) ? '?' . http_build_query($params) : '';
             $response = $this->httpClient->get("/restore{$query}");
             $data = $this->handleResponse($response);
+
             return $data['jobs'] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list restore jobs: ' . $e->getMessage(), 0, $e);
@@ -222,6 +229,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->get("/restore/{$id}");
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to describe restore job: $id. {$e->getMessage()}", 0, $e);
@@ -233,6 +241,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->post('/assistants', ['json' => $config]);
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to create assistant: ' . $e->getMessage(), 0, $e);
@@ -244,6 +253,7 @@ class ControlPlane
         try {
             $response = $this->httpClient->get('/assistants');
             $data = $this->handleResponse($response);
+
             return $data['assistants'] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list assistants: ' . $e->getMessage(), 0, $e);
@@ -254,6 +264,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->get("/assistants/{$name}");
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to describe assistant: $name. {$e->getMessage()}", 0, $e);
@@ -264,6 +275,7 @@ class ControlPlane
     {
         try {
             $response = $this->httpClient->patch("/assistants/{$name}", ['json' => $config]);
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to update assistant: $name. {$e->getMessage()}", 0, $e);

@@ -52,6 +52,7 @@ class Index
     {
         try {
             $response = $this->httpClient->post('/operations/imports', ['json' => $requestData]);
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to start import: ' . $e->getMessage(), 0, $e);
@@ -62,6 +63,7 @@ class Index
     {
         try {
             $response = $this->httpClient->get('/operations/imports');
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list imports: ' . $e->getMessage(), 0, $e);
@@ -72,6 +74,7 @@ class Index
     {
         try {
             $response = $this->httpClient->get("/operations/imports/{$importId}");
+
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to describe import: ' . $e->getMessage(), 0, $e);
@@ -95,6 +98,7 @@ class Index
         try {
             $response = $this->httpClient->get('/describe_index_stats');
             $data = $this->handleResponse($response);
+
             return array_keys($data['namespaces'] ?? []);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list namespaces: ' . $e->getMessage(), 0, $e);
@@ -108,6 +112,7 @@ class Index
                 'json' => (object) ['filter' => ['namespace' => $namespace]]
             ]);
             $data = $this->handleResponse($response);
+
             return $data['namespaces'][$namespace] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to describe namespace: ' . $e->getMessage(), 0, $e);

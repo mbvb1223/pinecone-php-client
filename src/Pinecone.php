@@ -25,6 +25,7 @@ class Pinecone
     public function index(string $name): Index
     {
         $indexInfo = $this->describeIndex($name);
+
         return new Index($this->config, $indexInfo);
     }
 
@@ -36,6 +37,7 @@ class Pinecone
     public function assistant(string $name): AssistantClient
     {
         $assistantInfo = $this->describeAssistant($name);
+
         return new AssistantClient($this->config, $assistantInfo);
     }
 
