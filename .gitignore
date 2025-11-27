@@ -26,3 +26,5 @@ coverage/
 # Cache
 cache/
 tmp/
+.php-cs-fixer.cache
+.phpunit.cache
