@@ -6,7 +6,6 @@ namespace Mbvb1223\Pinecone\Control;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\DTOs\Index;
 use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
@@ -51,7 +50,42 @@ class ControlPlane
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to create index: ' . $e->getMessage(), 0, $e);
+            throw new PineconeException("Failed to create index: $name. {$e->getMessage()}", 0, $e);
+        }
+    }
+
+    public function createForModel(string $name, array $requestData): array
+    {
+        try {
+            $payload = [
+                'name' => $name,
+                'cloud' => $requestData['cloud'],
+                'region' => $requestData['region'],
+                'embed' => $requestData['embed'],
+            ];
+
+            // Add optional fields if provided
+            if (isset($requestData['deletion_protection'])) {
+                $payload['deletion_protection'] = $requestData['deletion_protection'];
+            }
+
+            if (isset($requestData['tags'])) {
+                $payload['tags'] = $requestData['tags'];
+            }
+
+            if (isset($requestData['schema'])) {
+                $payload['schema'] = $requestData['schema'];
+            }
+
+            if (isset($requestData['read_capacity'])) {
+                $payload['read_capacity'] = $requestData['read_capacity'];
+            }
+
+            $response = $this->httpClient->post('/indexes/create-for-model', ['json' => $payload]);
+
+            return $this->handleResponse($response);
+        } catch (GuzzleException $e) {
+            throw new PineconeException("Failed to create index for model: $name. {$e->getMessage()}", 0, $e);
         }
     }
 
@@ -62,7 +96,7 @@ class ControlPlane
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to describe index: ' . $e->getMessage(), 0, $e);
+            throw new PineconeException("Failed to describe index: $name. {$e->getMessage()}", 0, $e);
         }
     }
 
@@ -72,19 +106,17 @@ class ControlPlane
             $response = $this->httpClient->delete("/indexes/{$name}");
             $this->handleResponse($response);
         } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to delete index: ' . $e->getMessage(), 0, $e);
+            throw new PineconeException("Failed to delete index: $name. {$e->getMessage()}", 0, $e);
         }
     }
 
-    public function configureIndex(string $name, array $spec): void
+    public function configureIndex(string $name, array $requestData): array
     {
         try {
-            $response = $this->httpClient->patch("/indexes/{$name}", [
-                'json' => ['spec' => $spec],
-            ]);
-            $this->handleResponse($response);
+            $response = $this->httpClient->patch("/indexes/{$name}", ['json' => $requestData]);
+            return $this->handleResponse($response);
         } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to configure index: ' . $e->getMessage(), 0, $e);
+            throw new PineconeException("Failed to configure index: $name. {$e->getMessage()}", 0, $e);
         }
     }
 

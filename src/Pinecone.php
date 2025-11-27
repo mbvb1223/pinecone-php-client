@@ -33,6 +33,11 @@ class Pinecone
         return $this->controlPlane->createIndex($name, $requestData);
     }
 
+    public function createForModel(string $name, array $requestData): array
+    {
+        return $this->controlPlane->createForModel($name, $requestData);
+    }
+
     public function describeIndex(string $name): array
     {
         return $this->controlPlane->describeIndex($name);
@@ -41,6 +46,11 @@ class Pinecone
     public function deleteIndex(string $name): void
     {
         $this->controlPlane->deleteIndex($name);
+    }
+
+    public function configureIndex(string $name, array $requestData): array
+    {
+        return $this->controlPlane->configureIndex($name, $requestData);
     }
 
     public function index(string $name): DataPlane

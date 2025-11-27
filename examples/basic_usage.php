@@ -35,6 +35,29 @@ function createIndex()
     var_dump($index);
 }
 
+function createForModel()
+{
+    $pinecone = new Pinecone();
+
+    $index = $pinecone->createForModel('test-embed-index', [
+        'cloud' => 'aws',
+        'region' => 'us-east-1',
+        'embed' => [
+            'model' => 'multilingual-e5-large',
+            'metric' => 'cosine',
+            'field_map' => [
+                'text' => 'content'
+            ]
+        ],
+        'deletion_protection' => 'disabled',
+        'tags' => [
+            'environment' => 'test'
+        ]
+    ]);
+
+    var_dump($index);
+}
+
 function describeIndex()
 {
     $pinecone = new Pinecone();
@@ -44,4 +67,28 @@ function describeIndex()
     var_dump($index);
 }
 
-describeIndex();
+function deleteIndex()
+{
+    $pinecone = new Pinecone();
+
+    $pinecone->deleteIndex('test-embed-index');
+
+    var_dump(true);
+}
+
+function configureIndex()
+{
+    $pinecone = new Pinecone();
+
+    $index = $pinecone->configureIndex('test-integrations-php', [
+        'tags' => [
+            'project' => 'pinecone-php-client',
+            'owner' => 'mbvb1223',
+            'environment' => 'development'
+        ]
+    ]);
+
+    var_dump($index);
+}
+
+configureIndex();
