@@ -7,25 +7,10 @@ namespace Mbvb1223\Pinecone\Tests\Integration;
 use Mbvb1223\Pinecone\DTOs\Index;
 use Mbvb1223\Pinecone\DTOs\IndexStatus;
 use Mbvb1223\Pinecone\DTOs\IndexSpec;
-use Mbvb1223\Pinecone\Pinecone;
-use PHPUnit\Framework\TestCase;
+use Mbvb1223\Pinecone\Tests\Integration\Base\BaseIntegrationTestCase;
 
-class ListIndexesTest extends TestCase
+class ListIndexesTest extends BaseIntegrationTestCase
 {
-    private Pinecone $pinecone;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $apiKey = getenv('PINECONE_API_KEY') ?: '';
-        if (!$apiKey) {
-            $this->markTestSkipped('PINECONE_API_KEY environment variable not set');
-        }
-
-        $this->pinecone = new Pinecone($apiKey);
-    }
-
     public function testListIndexesReturnsArrayOfIndexObjects(): void
     {
         $indexes = $this->pinecone->listIndexes();
@@ -71,7 +56,6 @@ class ListIndexesTest extends TestCase
                 $this->assertContains($index->deletionProtection, ['enabled', 'disabled']);
             }
         } else {
-            // If no indexes exist, we can still verify the method returns an empty array
             $this->assertSame([], $indexes);
         }
     }
