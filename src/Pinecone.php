@@ -23,17 +23,14 @@ class Pinecone
         $this->controlPlane = new ControlPlane($this->config);
     }
 
-    /**
-     * @return Index[]
-     */
     public function listIndexes(): array
     {
         return $this->controlPlane->listIndexes();
     }
 
-    public function createIndex(string $name, array $spec): void
+    public function createIndex(string $name, array $requestData): array
     {
-        $this->controlPlane->createIndex($name, $spec);
+        return $this->controlPlane->createIndex($name, $requestData);
     }
 
     public function describeIndex(string $name): array
@@ -64,5 +61,26 @@ class Pinecone
     public function assistant(): AssistantClient
     {
         return new AssistantClient($this->config);
+    }
+
+    public function addHeader(string $name, string $value): self
+    {
+        $this->config->addHeader($name, $value);
+
+        return $this;
+    }
+
+    public function removeHeader(string $name): self
+    {
+        $this->config->removeHeader($name);
+
+        return $this;
+    }
+
+    public function setHeaders(array $headers): self
+    {
+        $this->config->setHeaders($headers);
+
+        return $this;
     }
 }

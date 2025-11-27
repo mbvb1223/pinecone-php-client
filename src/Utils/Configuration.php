@@ -58,6 +58,7 @@ class Configuration
             'Api-Key' => $this->apiKey,
             'User-Agent' => 'pinecone-php-client/1.0.0',
             'Content-Type' => 'application/json',
+            'X-Pinecone-Api-Version' => '2025-10',
         ], $this->additionalHeaders);
     }
 

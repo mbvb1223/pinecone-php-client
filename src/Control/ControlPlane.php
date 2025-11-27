@@ -7,7 +7,6 @@ namespace Mbvb1223\Pinecone\Control;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Mbvb1223\Pinecone\DTOs\Index;
-use Mbvb1223\Pinecone\DTOs\IndexCollection;
 use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
@@ -16,11 +15,9 @@ use Psr\Http\Message\ResponseInterface;
 class ControlPlane
 {
     private Client $httpClient;
-    private Configuration $config;
 
     public function __construct(Configuration $config)
     {
-        $this->config = $config;
         $this->httpClient = new Client([
             'base_uri' => $config->getControllerHost(),
             'timeout' => $config->getTimeout(),
@@ -34,39 +31,36 @@ class ControlPlane
             $response = $this->httpClient->get('/indexes');
             $data = $this->handleResponse($response);
 
-            return Index::listmap($data['indexes'] ?? []);
+            return $data['indexes'] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list indexes: ' . $e->getMessage(), 0, $e);
         }
     }
 
-    public function createIndex(string $name, array $spec): void
+    public function createIndex(string $name, array $requestData): array
     {
         try {
             $payload = [
                 'name' => $name,
-                'dimension' => $spec['dimension'],
-                'metric' => $spec['metric'] ?? 'cosine',
-                'spec' => $spec,
+                'dimension' => $requestData['dimension'],
+                'metric' => $requestData['metric'] ?? 'cosine',
+                'spec' => $requestData['spec'],
             ];
 
-            $response = $this->httpClient->post('/indexes', [
-                'json' => $payload,
-            ]);
+            $response = $this->httpClient->post('/indexes', ['json' => $payload]);
 
-            $this->handleResponse($response);
+            return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to create index: ' . $e->getMessage(), 0, $e);
         }
     }
 
-    public function describeIndex(string $name): Index
+    public function describeIndex(string $name): array
     {
         try {
             $response = $this->httpClient->get("/indexes/{$name}");
-            $data = $this->handleResponse($response);
 
-            return Index::fromArray($data);
+            return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to describe index: ' . $e->getMessage(), 0, $e);
         }

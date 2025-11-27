@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mbvb1223\Pinecone\Pinecone;
-use Mbvb1223\Pinecone\Errors\PineconeException;
 
 function listIndexes()
 {
@@ -18,4 +17,31 @@ function listIndexes()
     }
 }
 
-listIndexes();
+function createIndex()
+{
+    $pinecone = new Pinecone();
+
+    $index = $pinecone->createIndex('test-integrations-php', [
+        'dimension' => 1024,
+        'metric' => 'cosine',
+        'spec' => [
+            'serverless' => [
+                'cloud' => 'aws',
+                'region' => 'us-east-1'
+            ]
+        ]
+    ]);
+
+    var_dump($index);
+}
+
+function describeIndex()
+{
+    $pinecone = new Pinecone();
+
+    $index = $pinecone->describeIndex('test-integrations-php');
+
+    var_dump($index);
+}
+
+describeIndex();
