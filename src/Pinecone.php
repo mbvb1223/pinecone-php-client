@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mbvb1223\Pinecone;
 
+use GuzzleHttp\Client;
 use Mbvb1223\Pinecone\Control\ControlPlane;
 use Mbvb1223\Pinecone\Data\Index;
 use Mbvb1223\Pinecone\Inference\InferenceClient;
@@ -18,7 +19,12 @@ class Pinecone
     public function __construct(?string $apiKey = null, ?array $config = null)
     {
         $this->config = new Configuration($apiKey, $config);
-        $this->controlPlane = new ControlPlane($this->config);
+        $client = new Client([
+            'base_uri' => $this->config->getControllerHost(),
+            'timeout' => $this->config->getTimeout(),
+            'headers' => $this->config->getDefaultHeaders(),
+        ]);
+        $this->controlPlane = new ControlPlane($client);
     }
 
     // ===== Factory methods to get sub-components =====

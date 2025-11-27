@@ -6,7 +6,7 @@ namespace Mbvb1223\Pinecone\Tests\Integration;
 
 use Mbvb1223\Pinecone\Tests\Integration\Base\BaseIntegrationTestCase;
 
-class IndexesTest extends BaseIntegrationTestCase
+class IndexTest extends BaseIntegrationTestCase
 {
     public function testListIndexes(): void
     {

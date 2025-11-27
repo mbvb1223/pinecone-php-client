@@ -6,22 +6,14 @@ namespace Mbvb1223\Pinecone\Control;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
 use Psr\Http\Message\ResponseInterface;
 
 class ControlPlane
 {
-    private Client $httpClient;
-
-    public function __construct(Configuration $config)
+    public function __construct(private readonly Client $httpClient)
     {
-        $this->httpClient = new Client([
-            'base_uri' => $config->getControllerHost(),
-            'timeout' => $config->getTimeout(),
-            'headers' => $config->getDefaultHeaders(),
-        ]);
     }
 
     public function listIndexes(): array
