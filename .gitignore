@@ -13,18 +13,11 @@ composer.lock
 Thumbs.db
 
 # Build artifacts
-coverage/
 .phpunit.result.cache
 
 # Environment variables
 .env
-.env.local
-
-# Logs
-*.log
 
 # Cache
-cache/
-tmp/
 .php-cs-fixer.cache
 .phpunit.cache
