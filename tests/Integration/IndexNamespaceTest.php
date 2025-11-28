@@ -37,7 +37,6 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
                 'metadata' => ['category' => 'test']
             ]
         ]);
-        sleep(5);
         $vectors = $namespace->fetch(['vec1', 'vec2']);
         $this->assertCount(2, $vectors);
 
