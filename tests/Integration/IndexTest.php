@@ -10,7 +10,6 @@ class IndexTest extends BaseIntegrationTestCase
 {
     public function testListIndexes(): void
     {
-        echo "testListIndexes:" . PHP_EOL;
         $indexes = $this->pinecone->listIndexes();
 
         $this->assertIsArray($indexes);
@@ -32,10 +31,8 @@ class IndexTest extends BaseIntegrationTestCase
 
     public function testIndexOperations(): void
     {
-        echo "testIndexOperations:" . PHP_EOL;
         $indexName = 'test-integration';
 
-        sleep(5);
         $index = $this->pinecone->createIndex($indexName, [
             'dimension' => 1024,
             'metric' => 'cosine',
