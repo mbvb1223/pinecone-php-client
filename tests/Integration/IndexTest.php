@@ -30,6 +30,7 @@ class IndexTest extends BaseIntegrationTestCase
     {
         $indexName = 'test-integration';
 
+        sleep(5);
         $index = $this->pinecone->createIndex($indexName, [
             'dimension' => 1024,
             'metric' => 'cosine',
