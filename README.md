@@ -35,9 +35,10 @@ $pinecone->createIndex('my-index', [
 
 // Get index reference
 $index = $pinecone->index('my-index');
+$indexNamespace = $index->namespace('test-namespace');
 
 // Upsert vectors
-$index->upsert([
+$indexNamespace->upsert([
     [
         'id' => 'vec1',
         'values' => [0.1, 0.2, 0.3, /* ... more dimensions */],
@@ -46,7 +47,7 @@ $index->upsert([
 ]);
 
 // Query vectors
-$results = $index->query(
+$results = $indexNamespace->query(
     vector: [0.1, 0.2, 0.3, /* ... query vector */],
     topK: 10,
     includeMetadata: true
