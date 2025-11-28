@@ -94,7 +94,7 @@ class DataPlane
     public function fetch(array $ids, ?string $namespace = null): array
     {
         try {
-            $idQueries = implode('&', array_map(fn($id) => 'ids=' . urlencode($id), $ids));
+            $idQueries = implode('&', array_map(fn ($id) => 'ids=' . urlencode($id), $ids));
 
             $namespaceQuery = $namespace ? '&namespace=' . urlencode($namespace) : '';
 
