@@ -29,6 +29,7 @@ class IndexTest extends BaseIntegrationTestCase
     public function testIndexOperations(): void
     {
         $indexName = 'test-integration';
+        $this->pinecone->deleteIndex($indexName);
 
         $index = $this->pinecone->createIndex($indexName, [
             'dimension' => 1024,
@@ -71,7 +72,7 @@ class IndexTest extends BaseIntegrationTestCase
             ],
             'deletion_protection' => 'disabled',
             'tags' => [
-                'environment' => 'test'
+                'environment' => $tag
             ]
         ]);
 
