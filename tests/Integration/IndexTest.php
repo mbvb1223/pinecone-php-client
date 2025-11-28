@@ -58,5 +58,23 @@ class IndexTest extends BaseIntegrationTestCase
         $this->assertSame($tag, $index['tags']['environment']);
 
         $this->pinecone->deleteIndex($indexName);
+
+        $index = $this->pinecone->createForModel($indexName, [
+            'cloud' => 'aws',
+            'region' => 'us-east-1',
+            'embed' => [
+                'model' => 'multilingual-e5-large',
+                'metric' => 'cosine',
+                'field_map' => [
+                    'text' => 'content'
+                ]
+            ],
+            'deletion_protection' => 'disabled',
+            'tags' => [
+                'environment' => 'test'
+            ]
+        ]);
+
+        $this->pinecone->deleteIndex($indexName);
     }
 }
