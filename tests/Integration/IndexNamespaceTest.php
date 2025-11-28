@@ -11,7 +11,6 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
     public function testIndexNamespaceOperations(): void
     {
         $indexName = 'test-integration';
-        $this->pinecone->deleteIndex($indexName);
 
         $this->pinecone->createIndex($indexName, [
             'dimension' => 1024,
@@ -26,7 +25,7 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
 
         $index = $this->pinecone->index($indexName);
         $namespace = $index->namespace('khien');
-        $upsertResult = $namespace->upsert([
+        $namespace->upsert([
             [
                 'id' => 'vec1',
                 'values' => array_fill(0, 1024, 0.5),
