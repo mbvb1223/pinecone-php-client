@@ -59,7 +59,8 @@ class IndexTest extends BaseIntegrationTestCase
 
         $this->pinecone->deleteIndex($indexName);
 
-        $index = $this->pinecone->createForModel($indexName, [
+        $indexModelName = 'test-integration-model-' . bin2hex(random_bytes(5));
+        $index = $this->pinecone->createForModel($indexModelName, [
             'cloud' => 'aws',
             'region' => 'us-east-1',
             'embed' => [
@@ -77,6 +78,6 @@ class IndexTest extends BaseIntegrationTestCase
         $this->assertIsArray($index);
         $this->assertSame($tag, $index['tags']['environment']);
 
-        $this->pinecone->deleteIndex($indexName);
+        $this->pinecone->deleteIndex($indexModelName);
     }
 }
