@@ -10,7 +10,7 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
 {
     public function testIndexNamespaceOperations(): void
     {
-        echo "testIndexNamespaceOperations:" . PHP_EOL;
+        echo "testIndexNamespaceOperations" . PHP_EOL;
         $indexName = 'test-integration';
         sleep(5);
         $this->pinecone->createIndex($indexName, [
