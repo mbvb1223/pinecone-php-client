@@ -94,14 +94,17 @@ class DataPlane
     public function fetch(array $ids, ?string $namespace = null): array
     {
         try {
-            $params = ['ids' => implode(',', $ids)];
+            $params = [];
+            foreach ($ids as $id) {
+                $params['ids'][] = $id;
+            }
             if ($namespace) {
                 $params['namespace'] = $namespace;
             }
 
             $response = $this->httpClient->get('/vectors/fetch?' . http_build_query($params));
 
-            return $this->handleResponse($response);
+            return $this->handleResponse($response)['vectors'] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to fetch vectors: ' . $e->getMessage(), 0, $e);
         }
