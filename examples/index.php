@@ -103,26 +103,4 @@ function describeIndexStats()
     var_dump($data);
 }
 
-function vectorOperations()
-{
-    $pinecone = new Pinecone();
-
-    // Get index
-    $index = $pinecone->index('test-integrations-php');
-
-    // Get namespace
-    $namespace = $index->namespace('example-namespace');
-
-    // Vector operations
-    $vectors = [
-        ['id' => 'vec1', 'values' => [0.1, 0.2, 0.3]],
-        ['id' => 'vec2', 'values' => [0.4, 0.5, 0.6]]
-    ];
-
-    $namespace->upsert($vectors);
-    $results = $namespace->query([0.1, 0.2, 0.3], topK: 5);
-
-    var_dump($results);
-}
-
-describeIndexStats();
+listIndexes();
