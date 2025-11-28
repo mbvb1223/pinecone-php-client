@@ -94,15 +94,11 @@ class DataPlane
     public function fetch(array $ids, ?string $namespace = null): array
     {
         try {
-            $params = [];
-            foreach ($ids as $id) {
-                $params['ids'][] = $id;
-            }
-            if ($namespace) {
-                $params['namespace'] = $namespace;
-            }
+            $idQueries = implode('&', array_map(fn($id) => 'ids=' . urlencode($id), $ids));
 
-            $response = $this->httpClient->get('/vectors/fetch?' . http_build_query($params));
+            $namespaceQuery = $namespace ? '&namespace=' . urlencode($namespace) : '';
+
+            $response = $this->httpClient->get('/vectors/fetch?' . $idQueries . $namespaceQuery);
 
             return $this->handleResponse($response)['vectors'] ?? [];
         } catch (GuzzleException $e) {
