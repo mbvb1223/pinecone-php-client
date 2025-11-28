@@ -16,6 +16,7 @@ class Index
     private Client $httpClient;
     private Configuration $config;
     private array $indexInfo;
+    private DataPlane $dataPlane;
 
     public function __construct(Configuration $config, array $indexInfo)
     {
@@ -29,6 +30,8 @@ class Index
             'timeout' => $config->getTimeout(),
             'headers' => $config->getDefaultHeaders(),
         ]);
+
+        $this->dataPlane = new DataPlane($config, $indexInfo);
     }
 
     public function describeIndexStats(?array $filter = null): array
@@ -128,6 +131,11 @@ class Index
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to delete namespace: ' . $e->getMessage(), 0, $e);
         }
+    }
+
+    public function namespace(string $namespace): IndexNamespace
+    {
+        return new IndexNamespace($this->dataPlane, $namespace);
     }
 
     private function buildIndexHost(string $indexName): string
