@@ -13,6 +13,7 @@ class IndexTest extends BaseIntegrationTestCase
         $indexes = $this->pinecone->listIndexes();
 
         $this->assertIsArray($indexes);
+        var_dump($indexes);
 
         foreach ($indexes as $index) {
             $this->assertIsArray($index);
