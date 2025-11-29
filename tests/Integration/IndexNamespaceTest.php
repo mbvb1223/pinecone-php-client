@@ -42,9 +42,16 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
 
         $namespace->delete(['vec1']);
 
+        $namespace->update('vec2', [], ['category' => 'updated']);
+        $namespace->query(
+            vector: array_fill(0, 1024, 0.8),
+            topK: 1,
+        );
+
         $vectors = $namespace->fetch(['vec1', 'vec2']);
         $this->assertCount(1, $vectors);
 
         $this->pinecone->deleteIndex($indexName);
+
     }
 }

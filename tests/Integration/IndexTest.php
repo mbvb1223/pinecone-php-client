@@ -8,7 +8,7 @@ use Mbvb1223\Pinecone\Tests\Integration\Base\BaseIntegrationTestCase;
 
 class IndexTest extends BaseIntegrationTestCase
 {
-    public function testListIndexes(): void
+    public function testIndexOperations(): void
     {
         $indexes = $this->pinecone->listIndexes();
 
@@ -24,10 +24,7 @@ class IndexTest extends BaseIntegrationTestCase
             $this->assertArrayHasKey('status', $index);
             $this->assertArrayHasKey('spec', $index);
         }
-    }
 
-    public function testIndexOperations(): void
-    {
         $indexName = 'test-integration';
 
         $index = $this->pinecone->createIndex($indexName, [
