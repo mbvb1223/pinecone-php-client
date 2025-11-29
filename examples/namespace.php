@@ -4,7 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mbvb1223\Pinecone\Pinecone;
 
-function namespaceOperations()
+function indexNamespaceOperations()
 {
     $pinecone = new Pinecone();
 
@@ -34,4 +34,4 @@ function namespaceOperations()
     var_dump($result);
 }
 
-namespaceOperations();
+indexNamespaceOperations();
