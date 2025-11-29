@@ -21,5 +21,6 @@ class BaseIntegrationTestCase extends TestCase
         }
 
         $this->pinecone = new Pinecone($apiKey);
+        sleep(60);
     }
 }
