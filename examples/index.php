@@ -14,7 +14,7 @@ function listIndexes()
     echo "Listing indexes...\n";
     $indexes = $pinecone->listIndexes();
     foreach ($indexes as $index) {
-        echo "-" . $index->name .  PHP_EOL;
+        echo "-" . $index['name'] .  PHP_EOL;
     }
 }
 
