@@ -22,9 +22,4 @@ class BaseIntegrationTestCase extends TestCase
 
         $this->pinecone = new Pinecone($apiKey);
     }
-
-    protected function sleep(int $seconds = 5): void
-    {
-        sleep($seconds);
-    }
 }

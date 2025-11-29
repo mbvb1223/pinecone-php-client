@@ -52,7 +52,5 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
         $this->assertCount(1, $vectors);
 
         $this->pinecone->deleteIndex($indexName);
-
-        $this->sleep();
     }
 }

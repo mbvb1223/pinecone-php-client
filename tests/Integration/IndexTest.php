@@ -76,7 +76,5 @@ class IndexTest extends BaseIntegrationTestCase
         $this->assertSame($tag, $index['tags']['environment']);
 
         $this->pinecone->deleteIndex($indexModelName);
-
-        $this->sleep();
     }
 }
