@@ -53,5 +53,6 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
 
         $this->pinecone->deleteIndex($indexName);
 
+        $this->sleep();
     }
 }
