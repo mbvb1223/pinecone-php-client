@@ -51,6 +51,7 @@ jobs:
         retention-days: 2
 
   upload-coverage-report:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     needs: build_test
     runs-on: ubuntu-latest
     steps:
@@ -74,4 +75,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install the package
-        run: composer require mbvb1223/pinecone-php-client:dev-dev --no-cache --prefer-dist --no-progress
+        run: composer require mbvb1223/pinecone-php-client --no-cache --prefer-dist --no-progress
