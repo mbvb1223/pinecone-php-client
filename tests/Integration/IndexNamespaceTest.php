@@ -10,7 +10,7 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
 {
     public function testIndexNamespaceOperations(): void
     {
-        $indexName = 'test-integration';
+        $indexName = 'test-indexnamespacetest';
 
         $this->pinecone->createIndex($indexName, [
             'dimension' => 1024,
@@ -41,6 +41,12 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
         $this->assertCount(2, $vectors);
 
         $namespace->delete(['vec1']);
+
+        $namespace->update('vec2', [], ['category' => 'updated']);
+        $namespace->query(
+            vector: array_fill(0, 1024, 0.8),
+            topK: 1,
+        );
 
         $vectors = $namespace->fetch(['vec1', 'vec2']);
         $this->assertCount(1, $vectors);
