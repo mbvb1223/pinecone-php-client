@@ -355,4 +355,51 @@ class ControlPlaneTest extends TestCase
 
         $this->controlPlane->listIndexes();
     }
+
+    public function testResponseDataError(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(500);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"message":"Internal Server Error"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        try {
+            $this->controlPlane->listIndexes();
+        } catch (PineconeApiException $e) {
+            $this->assertEquals(500, $e->getCode());
+            $this->assertEquals(['message' => 'Internal Server Error'], $e->getResponseData());
+        }
+    }
+
+    public function testResponseIsEmpty(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        $this->assertEmpty($this->controlPlane->listIndexes());
+    }
+
+    public function testResponseIsNotJson(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('xxx');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessageMatches('/^Failed to decode JSON response:/');
+
+        $this->controlPlane->listIndexes();
+    }
 }
