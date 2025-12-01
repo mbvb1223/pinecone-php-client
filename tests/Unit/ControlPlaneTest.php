@@ -8,11 +8,13 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Mbvb1223\Pinecone\Control\ControlPlane;
+use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
 use Mbvb1223\Pinecone\Utils\Configuration;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 class ControlPlaneTest extends TestCase
 {
@@ -336,5 +338,68 @@ class ControlPlaneTest extends TestCase
         $this->expectExceptionMessage('Failed to delete assistant: test-assistant. Delete failed');
 
         $this->controlPlane->deleteAssistant('test-assistant');
+    }
+
+    public function testResponseIs500(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(500);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"message":"Internal Server Error"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        $this->expectException(PineconeApiException::class);
+        $this->expectExceptionCode(500);
+
+        $this->controlPlane->listIndexes();
+    }
+
+    public function testResponseDataError(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(500);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"message":"Internal Server Error"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        try {
+            $this->controlPlane->listIndexes();
+        } catch (PineconeApiException $e) {
+            $this->assertEquals(500, $e->getCode());
+            $this->assertEquals(['message' => 'Internal Server Error'], $e->getResponseData());
+        }
+    }
+
+    public function testResponseIsEmpty(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        $this->assertEmpty($this->controlPlane->listIndexes());
+    }
+
+    public function testResponseIsNotJson(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('xxx');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessageMatches('/^Failed to decode JSON response:/');
+
+        $this->controlPlane->listIndexes();
     }
 }

@@ -17,18 +17,12 @@ class PineconeException extends Exception
 class PineconeApiException extends PineconeException
 {
     private array $responseData;
-    private int $statusCode;
 
     public function __construct(string $message, int $statusCode, array $responseData = [], ?Exception $previous = null)
     {
-        $this->statusCode = $statusCode;
         $this->responseData = $responseData;
-        parent::__construct($message, $statusCode, $previous);
-    }
 
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
+        parent::__construct($message, $statusCode, $previous);
     }
 
     public function getResponseData(): array
