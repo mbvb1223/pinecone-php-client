@@ -51,7 +51,6 @@ jobs:
         retention-days: 2
 
   upload-coverage-report:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
     needs: build_test
     runs-on: ubuntu-latest
     steps:
