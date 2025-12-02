@@ -25,7 +25,7 @@ class IndexTest extends BaseIntegrationTestCase
             $this->assertArrayHasKey('spec', $index);
         }
 
-        $indexName = 'test-integration';
+        $indexName = BaseIntegrationTestCase::INDEX_NAMES[2];
         $index = $this->createIndexName($indexName);
 
         $this->assertIsArray($index);
@@ -46,7 +46,7 @@ class IndexTest extends BaseIntegrationTestCase
 
         $this->pinecone->deleteIndex($indexName);
 
-        $indexModelName = 'test-integration-model-' . bin2hex(random_bytes(5));
+        $indexModelName = BaseIntegrationTestCase::INDEX_NAMES[3];
         $index = $this->pinecone->createForModel($indexModelName, [
             'cloud' => 'aws',
             'region' => 'us-east-1',
@@ -70,7 +70,7 @@ class IndexTest extends BaseIntegrationTestCase
 
     public function testIndexDataPlane(): void
     {
-        $indexName = 'test-integration-data-plane';
+        $indexName = BaseIntegrationTestCase::INDEX_NAMES[4];
         $this->createIndexName($indexName);
         $index = $this->pinecone->index($indexName);
         $result = $index->describeIndexStats();

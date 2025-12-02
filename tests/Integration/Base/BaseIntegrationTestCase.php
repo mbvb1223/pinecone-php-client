@@ -9,6 +9,12 @@ use PHPUnit\Framework\TestCase;
 
 class BaseIntegrationTestCase extends TestCase
 {
+    const INDEX_NAMES = [
+        'test-index-1',
+        'test-index-2',
+        'test-index-3',
+        'test-index-4',
+    ];
     protected Pinecone $pinecone;
 
     protected function setUp(): void
