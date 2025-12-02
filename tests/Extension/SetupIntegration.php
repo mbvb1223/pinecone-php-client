@@ -18,7 +18,8 @@ class SetupIntegration implements Extension
         foreach (BaseIntegrationTestCase::INDEX_NAMES as $index) {
             try {
                 $pinecone->deleteIndex($index);
-            }catch (\Exception $exception){}
+            } catch (\Exception $exception) {
+            }
         }
         sleep(5);
     }

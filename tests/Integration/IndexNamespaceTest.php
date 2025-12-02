@@ -10,7 +10,7 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
 {
     public function testIndexNamespaceOperations(): void
     {
-        $indexName = BaseIntegrationTestCase::INDEX_NAMES[0];
+        $indexName = BaseIntegrationTestCase::INDEX_NAMES[1];
 
         $this->pinecone->createIndex($indexName, [
             'dimension' => 1024,

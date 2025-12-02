@@ -31,9 +31,8 @@ class IndexTest extends TestCase
 
     public function testDescribeIndexStatsThrowsException(): void
     {
-        $this->httpClientMock->shouldReceive('get')
+        $this->httpClientMock->shouldReceive('post')
             ->once()
-            ->with('//describe_index_stats')
             ->andThrow(new RequestException('Network error', new Request('GET', '/indexes')));
 
         $this->expectException(PineconeException::class);

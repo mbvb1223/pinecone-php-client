@@ -9,11 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 class BaseIntegrationTestCase extends TestCase
 {
-    const INDEX_NAMES = [
-        'test-index-1',
-        'test-index-2',
-        'test-index-3',
-        'test-index-4',
+    public const INDEX_NAMES = [
+        1 => 'test-index-1',
+        2 => 'test-index-2',
+        3 => 'test-index-3',
+        4 => 'test-index-4',
     ];
     protected Pinecone $pinecone;
 
