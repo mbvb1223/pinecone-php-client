@@ -7,15 +7,11 @@ namespace Mbvb1223\Pinecone\Tests\Unit;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
-use Mbvb1223\Pinecone\Control\ControlPlane;
 use Mbvb1223\Pinecone\Data\Index;
-use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 
 class IndexTest extends TestCase
 {
