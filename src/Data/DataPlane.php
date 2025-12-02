@@ -6,29 +6,14 @@ namespace Mbvb1223\Pinecone\Data;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
 use Psr\Http\Message\ResponseInterface;
 
 class DataPlane
 {
-    private Client $httpClient;
-    private Configuration $config;
-    private array $indexInfo;
-
-    public function __construct(Configuration $config, array $indexInfo)
+    public function __construct(private readonly Client $httpClient)
     {
-        $this->config = $config;
-        $this->indexInfo = $indexInfo;
-
-        $host = $this->indexInfo['host'] ?? $this->buildIndexHost($this->indexInfo['name']);
-
-        $this->httpClient = new Client([
-            'base_uri' => "https://{$host}",
-            'timeout' => $config->getTimeout(),
-            'headers' => $config->getDefaultHeaders(),
-        ]);
     }
 
     public function upsert(array $vectors, ?string $namespace = null): array
