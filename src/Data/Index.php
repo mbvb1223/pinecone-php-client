@@ -54,7 +54,7 @@ class Index
     public function startImport(array $requestData): array
     {
         try {
-            $response = $this->httpClient->post('/operations/imports', ['json' => $requestData]);
+            $response = $this->httpClient->post('/bulk/imports', ['json' => $requestData]);
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -65,7 +65,7 @@ class Index
     public function listImports(): array
     {
         try {
-            $response = $this->httpClient->get('/operations/imports');
+            $response = $this->httpClient->get('/bulk/imports');
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -76,7 +76,7 @@ class Index
     public function describeImport(string $importId): array
     {
         try {
-            $response = $this->httpClient->get("/operations/imports/{$importId}");
+            $response = $this->httpClient->get("/bulk/imports/{$importId}");
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -87,9 +87,7 @@ class Index
     public function cancelImport(string $importId): void
     {
         try {
-            $this->httpClient->patch("/operations/imports/{$importId}", [
-                'json' => ['status' => 'cancelled']
-            ]);
+            $this->httpClient->delete("/bulk/imports/{$importId}");
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to cancel import: ' . $e->getMessage(), 0, $e);
         }

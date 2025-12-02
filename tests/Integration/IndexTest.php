@@ -8,7 +8,7 @@ use Mbvb1223\Pinecone\Tests\Integration\Base\BaseIntegrationTestCase;
 
 class IndexTest extends BaseIntegrationTestCase
 {
-    public function testIndexOperations(): void
+    public function testIndexControlPlane(): void
     {
         $indexes = $this->pinecone->listIndexes();
 
@@ -26,17 +26,7 @@ class IndexTest extends BaseIntegrationTestCase
         }
 
         $indexName = 'test-integration';
-
-        $index = $this->pinecone->createIndex($indexName, [
-            'dimension' => 1024,
-            'metric' => 'cosine',
-            'spec' => [
-                'serverless' => [
-                    'cloud' => 'aws',
-                    'region' => 'us-east-1'
-                ]
-            ]
-        ]);
+        $index = $this->createIndexName($indexName);
 
         $this->assertIsArray($index);
         $this->assertSame($indexName, $index['name']);
@@ -76,5 +66,53 @@ class IndexTest extends BaseIntegrationTestCase
         $this->assertSame($tag, $index['tags']['environment']);
 
         $this->pinecone->deleteIndex($indexModelName);
+    }
+
+    public function testIndexDataPlane(): void
+    {
+        $indexName = 'test-integration-data-plane';
+        $this->createIndexName($indexName);
+        $index = $this->pinecone->index($indexName);
+        $result = $index->describeIndexStats();
+        $this->assertIsArray($result);
+        try {
+            $index->describeIndexStats(['category' => 'non-existent']);
+        } catch (\Exception $exception) {
+            $this->assertTrue(str_contains($exception->getMessage(), 'Serverless and Starter indexes do not support describing index stats with metadata filterin'));
+        }
+
+        $result = $index->listImports();
+        $this->assertIsArray($result);
+
+        try {
+            $index->describeImport('123');
+        } catch (\Exception $exception) {
+            $this->assertTrue(str_contains($exception->getMessage(), 'Operation not found'));
+        }
+
+        $result = $index->startImport([
+            'id' => '1',
+            'uri' => 's3://non-existent-bucket/path',
+        ]);
+        $this->assertIsArray($result);
+
+        $index->cancelImport('1');
+        $this->assertIsArray($result);
+
+        $this->pinecone->deleteIndex($indexName);
+    }
+
+    protected function createIndexName(string $indexName): array
+    {
+        return $this->pinecone->createIndex($indexName, [
+            'dimension' => 1024,
+            'metric' => 'cosine',
+            'spec' => [
+                'serverless' => [
+                    'cloud' => 'aws',
+                    'region' => 'us-east-1'
+                ]
+            ]
+        ]);
     }
 }
