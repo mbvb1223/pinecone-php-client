@@ -31,8 +31,14 @@ class Pinecone
     public function index(string $name): Index
     {
         $indexInfo = $this->describeIndex($name);
+        $host = $indexInfo['host'] ?? $this->buildIndexHost($indexInfo['name']);
+        $client = new Client([
+            'base_uri' => "https://{$host}",
+            'timeout' => $this->config->getTimeout(),
+            'headers' => $this->config->getDefaultHeaders(),
+        ]);
 
-        return new Index($this->config, $indexInfo);
+        return new Index($client);
     }
 
     public function inference(): InferenceClient
@@ -155,5 +161,10 @@ class Pinecone
     public function deleteAssistant(string $name): void
     {
         $this->controlPlane->deleteAssistant($name);
+    }
+
+    private function buildIndexHost(string $indexName): string
+    {
+        return "{$indexName}-{$this->config->getEnvironment()}.svc.{$this->config->getEnvironment()}.pinecone.io";
     }
 }
