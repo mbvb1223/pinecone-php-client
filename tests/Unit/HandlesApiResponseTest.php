@@ -20,7 +20,7 @@ class HandlesApiResponseTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->handler = new class {
+        $this->handler = new class () {
             use HandlesApiResponse;
 
             public function handle(ResponseInterface $response): array

@@ -453,6 +453,7 @@ class ControlPlaneTest extends TestCase
             ->once()
             ->with('/indexes/create-for-model', Mockery::on(function ($arg) {
                 $json = $arg['json'];
+
                 return $json['name'] === 'model-index'
                     && $json['cloud'] === 'aws';
             }))

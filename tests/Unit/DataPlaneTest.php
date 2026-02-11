@@ -285,6 +285,7 @@ class DataPlaneTest extends TestCase
             ->once()
             ->with('/vectors/update', Mockery::on(function ($arg) use ($sparseValues) {
                 $json = $arg['json'];
+
                 return $json['id'] === 'v1'
                     && $json['values'] === [0.5, 0.6]
                     && $json['setMetadata'] === ['genre' => 'drama']

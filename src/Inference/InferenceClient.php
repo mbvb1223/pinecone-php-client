@@ -50,6 +50,7 @@ class InferenceClient
                 if (is_string($input)) {
                     return ['text' => $input];
                 }
+
                 return $input;
             }, $inputs);
 

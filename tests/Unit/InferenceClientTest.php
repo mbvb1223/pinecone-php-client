@@ -51,6 +51,7 @@ class InferenceClientTest extends TestCase
             ->once()
             ->with('/embed', Mockery::on(function ($arg) {
                 $json = $arg['json'];
+
                 return $json['model'] === 'multilingual-e5-large'
                     && $json['inputs'] === [['text' => 'hello']];
             }))
@@ -71,6 +72,7 @@ class InferenceClientTest extends TestCase
             ->once()
             ->with('/embed', Mockery::on(function ($arg) {
                 $inputs = $arg['json']['inputs'];
+
                 return $inputs === [['text' => 'hello'], ['text' => 'world']];
             }))
             ->andReturn($response);
@@ -154,6 +156,7 @@ class InferenceClientTest extends TestCase
             ->once()
             ->with('/rerank', Mockery::on(function ($arg) {
                 $json = $arg['json'];
+
                 return $json['model'] === 'bge-reranker-v2-m3'
                     && $json['query'] === 'What is AI?'
                     && count($json['documents']) === 2
