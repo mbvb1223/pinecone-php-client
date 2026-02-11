@@ -7,20 +7,20 @@ namespace Mbvb1223\Pinecone\Assistant;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Mbvb1223\Pinecone\Utils\Configuration;
-use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Psr\Http\Message\ResponseInterface;
+use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class AssistantClient
 {
-    private Client $httpClient;
-    private Configuration $config;
+    use HandlesApiResponse;
 
-    public function __construct(Configuration $config)
+    private Client $httpClient;
+
+    public function __construct(Configuration $config, array $assistantInfo = [])
     {
-        $this->config = $config;
+        $host = $assistantInfo['host'] ?? 'api.pinecone.io';
         $this->httpClient = new Client([
-            'base_uri' => 'https://api.pinecone.io',
+            'base_uri' => "https://{$host}",
             'timeout' => $config->getTimeout(),
             'headers' => $config->getDefaultHeaders(),
         ]);
@@ -91,28 +91,5 @@ class AssistantClient
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to chat with assistant: ' . $e->getMessage(), 0, $e);
         }
-    }
-
-    private function handleResponse(ResponseInterface $response): array
-    {
-        $statusCode = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
-
-        if ($statusCode >= 400) {
-            $data = json_decode($body, true) ?? [];
-            $message = $data['message'] ?? 'API request failed';
-            throw new PineconeApiException($message, $statusCode, $data);
-        }
-
-        if (empty($body)) {
-            return [];
-        }
-
-        $decoded = json_decode($body, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new PineconeException('Failed to decode JSON response: ' . json_last_error_msg());
-        }
-
-        return $decoded;
     }
 }

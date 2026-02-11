@@ -6,12 +6,13 @@ namespace Mbvb1223\Pinecone\Data;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Psr\Http\Message\ResponseInterface;
+use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class Index
 {
+    use HandlesApiResponse;
+
     private DataPlane $dataPlane;
 
     public function __construct(private readonly Client $httpClient)
@@ -82,7 +83,7 @@ class Index
     public function listNamespaces(): array
     {
         try {
-            $response = $this->httpClient->get('/describe_index_stats');
+            $response = $this->httpClient->post('/describe_index_stats', ['json' => (object) []]);
             $data = $this->handleResponse($response);
 
             return array_keys($data['namespaces'] ?? []);
@@ -94,9 +95,7 @@ class Index
     public function describeNamespace(string $namespace): array
     {
         try {
-            $response = $this->httpClient->post('/describe_index_stats', [
-                'json' => (object) ['filter' => ['namespace' => $namespace]]
-            ]);
+            $response = $this->httpClient->post('/describe_index_stats', ['json' => (object) []]);
             $data = $this->handleResponse($response);
 
             return $data['namespaces'][$namespace] ?? [];
@@ -109,7 +108,7 @@ class Index
     {
         try {
             $this->httpClient->post('/vectors/delete', [
-                'json' => ['deleteAll' => true, 'namespace' => $namespace]
+                'json' => ['deleteAll' => true, 'namespace' => $namespace],
             ]);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to delete namespace: ' . $e->getMessage(), 0, $e);
@@ -121,26 +120,42 @@ class Index
         return new IndexNamespace($this->dataPlane, $namespace);
     }
 
-    private function handleResponse(ResponseInterface $response): array
+    // Data plane proxy methods
+    public function upsert(array $vectors, ?string $namespace = null): array
     {
-        $statusCode = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
+        return $this->dataPlane->upsert($vectors, $namespace);
+    }
 
-        if ($statusCode >= 400) {
-            $data = json_decode($body, true) ?? [];
-            $message = $data['message'] ?? 'API request failed';
-            throw new PineconeApiException($message, $statusCode, $data);
-        }
+    public function query(
+        array $vector = [],
+        ?string $id = null,
+        int $topK = 10,
+        ?array $filter = null,
+        ?string $namespace = null,
+        bool $includeValues = false,
+        bool $includeMetadata = true,
+        ?array $sparseVector = null
+    ): array {
+        return $this->dataPlane->query($vector, $id, $topK, $filter, $namespace, $includeValues, $includeMetadata, $sparseVector);
+    }
 
-        if (empty($body)) {
-            return [];
-        }
+    public function fetch(array $ids, ?string $namespace = null): array
+    {
+        return $this->dataPlane->fetch($ids, $namespace);
+    }
 
-        $decoded = json_decode($body, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new PineconeException('Failed to decode JSON response: ' . json_last_error_msg());
-        }
+    public function delete(array $ids = [], ?array $filter = null, ?string $namespace = null, bool $deleteAll = false): array
+    {
+        return $this->dataPlane->delete($ids, $filter, $namespace, $deleteAll);
+    }
 
-        return $decoded;
+    public function update(string $id, array $values = [], ?array $setMetadata = null, ?string $namespace = null): array
+    {
+        return $this->dataPlane->update($id, $values, $setMetadata, $namespace);
+    }
+
+    public function listVectorIds(?string $prefix = null, ?int $limit = null, ?string $paginationToken = null, ?string $namespace = null): array
+    {
+        return $this->dataPlane->listVectorIds($prefix, $limit, $paginationToken, $namespace);
     }
 }

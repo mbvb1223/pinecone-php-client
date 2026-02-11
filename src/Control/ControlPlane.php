@@ -6,12 +6,13 @@ namespace Mbvb1223\Pinecone\Control;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Psr\Http\Message\ResponseInterface;
+use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class ControlPlane
 {
+    use HandlesApiResponse;
+
     public function __construct(private readonly Client $httpClient)
     {
     }
@@ -31,12 +32,7 @@ class ControlPlane
     public function createIndex(string $name, array $requestData): array
     {
         try {
-            $payload = [
-                'name' => $name,
-                'dimension' => $requestData['dimension'],
-                'metric' => $requestData['metric'] ?? 'cosine',
-                'spec' => $requestData['spec'],
-            ];
+            $payload = array_merge(['metric' => 'cosine'], $requestData, ['name' => $name]);
 
             $response = $this->httpClient->post('/indexes', ['json' => $payload]);
 
@@ -260,28 +256,5 @@ class ControlPlane
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to delete assistant: $name. {$e->getMessage()}", 0, $e);
         }
-    }
-
-    private function handleResponse(ResponseInterface $response): array
-    {
-        $statusCode = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
-
-        if ($statusCode >= 400) {
-            $data = json_decode($body, true) ?? [];
-            $message = $data['message'] ?? 'API request failed';
-            throw new PineconeApiException($message, $statusCode, $data);
-        }
-
-        if (empty($body)) {
-            return [];
-        }
-
-        $decoded = json_decode($body, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new PineconeException('Failed to decode JSON response: ' . json_last_error_msg());
-        }
-
-        return $decoded;
     }
 }

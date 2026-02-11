@@ -6,12 +6,13 @@ namespace Mbvb1223\Pinecone\Data;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Psr\Http\Message\ResponseInterface;
+use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class DataPlane
 {
+    use HandlesApiResponse;
+
     public function __construct(private readonly Client $httpClient)
     {
     }
@@ -41,7 +42,8 @@ class DataPlane
         ?array $filter = null,
         ?string $namespace = null,
         bool $includeValues = false,
-        bool $includeMetadata = true
+        bool $includeMetadata = true,
+        ?array $sparseVector = null
     ): array {
         try {
             $payload = [
@@ -64,6 +66,10 @@ class DataPlane
 
             if ($namespace) {
                 $payload['namespace'] = $namespace;
+            }
+
+            if ($sparseVector) {
+                $payload['sparseVector'] = $sparseVector;
             }
 
             $response = $this->httpClient->post('/query', [
@@ -145,47 +151,29 @@ class DataPlane
         }
     }
 
-    public function describeIndexStats(?array $filter = null): array
+    public function listVectorIds(?string $prefix = null, ?int $limit = null, ?string $paginationToken = null, ?string $namespace = null): array
     {
         try {
-            $payload = [];
-            if ($filter) {
-                $payload['filter'] = $filter;
+            $params = [];
+            if ($prefix !== null) {
+                $params['prefix'] = $prefix;
+            }
+            if ($limit !== null) {
+                $params['limit'] = $limit;
+            }
+            if ($paginationToken !== null) {
+                $params['paginationToken'] = $paginationToken;
+            }
+            if ($namespace !== null) {
+                $params['namespace'] = $namespace;
             }
 
-            $response = $this->httpClient->post('/describe_index_stats', ['json' => (object) $payload]);
+            $query = !empty($params) ? '?' . http_build_query($params) : '';
+            $response = $this->httpClient->get("/vectors/list{$query}");
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to describe index stats: ' . $e->getMessage(), 0, $e);
+            throw new PineconeException('Failed to list vector IDs: ' . $e->getMessage(), 0, $e);
         }
-    }
-
-    private function buildIndexHost(string $indexName): string
-    {
-        return "{$indexName}-{$this->config->getEnvironment()}.svc.{$this->config->getEnvironment()}.pinecone.io";
-    }
-
-    private function handleResponse(ResponseInterface $response): array
-    {
-        $statusCode = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
-
-        if ($statusCode >= 400) {
-            $data = json_decode($body, true) ?? [];
-            $message = $data['message'] ?? 'API request failed';
-            throw new PineconeApiException($message, $statusCode, $data);
-        }
-
-        if (empty($body)) {
-            return [];
-        }
-
-        $decoded = json_decode($body, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new PineconeException('Failed to decode JSON response: ' . json_last_error_msg());
-        }
-
-        return $decoded;
     }
 }

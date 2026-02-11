@@ -26,9 +26,10 @@ class IndexNamespace
         int $topK = 10,
         ?array $filter = null,
         bool $includeValues = false,
-        bool $includeMetadata = true
+        bool $includeMetadata = true,
+        ?array $sparseVector = null
     ): array {
-        return $this->dataPlane->query($vector, $id, $topK, $filter, $this->namespace, $includeValues, $includeMetadata);
+        return $this->dataPlane->query($vector, $id, $topK, $filter, $this->namespace, $includeValues, $includeMetadata, $sparseVector);
     }
 
     public function fetch(array $ids): array
@@ -44,5 +45,10 @@ class IndexNamespace
     public function update(string $id, array $values = [], ?array $setMetadata = null): array
     {
         return $this->dataPlane->update($id, $values, $setMetadata, $this->namespace);
+    }
+
+    public function listVectorIds(?string $prefix = null, ?int $limit = null, ?string $paginationToken = null): array
+    {
+        return $this->dataPlane->listVectorIds($prefix, $limit, $paginationToken, $this->namespace);
     }
 }

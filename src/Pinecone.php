@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Mbvb1223\Pinecone;
 
 use GuzzleHttp\Client;
+use Mbvb1223\Pinecone\Assistant\AssistantClient;
 use Mbvb1223\Pinecone\Control\ControlPlane;
 use Mbvb1223\Pinecone\Data\Index;
+use Mbvb1223\Pinecone\Errors\PineconeException;
 use Mbvb1223\Pinecone\Inference\InferenceClient;
-use Mbvb1223\Pinecone\Assistant\AssistantClient;
 use Mbvb1223\Pinecone\Utils\Configuration;
 
 class Pinecone
@@ -31,7 +32,10 @@ class Pinecone
     public function index(string $name): Index
     {
         $indexInfo = $this->describeIndex($name);
-        $host = $indexInfo['host'] ?? $this->buildIndexHost($indexInfo['name']);
+        $host = $indexInfo['host'] ?? null;
+        if (!$host) {
+            throw new PineconeException("Index '$name' does not have a host URL.");
+        }
         $client = new Client([
             'base_uri' => "https://{$host}",
             'timeout' => $this->config->getTimeout(),
@@ -82,6 +86,17 @@ class Pinecone
     public function configureIndex(string $name, array $requestData): array
     {
         return $this->controlPlane->configureIndex($name, $requestData);
+    }
+
+    public function hasIndex(string $name): bool
+    {
+        try {
+            $this->describeIndex($name);
+
+            return true;
+        } catch (PineconeException) {
+            return false;
+        }
     }
 
     // ===== Collection control plane methods =====
@@ -161,10 +176,5 @@ class Pinecone
     public function deleteAssistant(string $name): void
     {
         $this->controlPlane->deleteAssistant($name);
-    }
-
-    private function buildIndexHost(string $indexName): string
-    {
-        return "{$indexName}-{$this->config->getEnvironment()}.svc.{$this->config->getEnvironment()}.pinecone.io";
     }
 }

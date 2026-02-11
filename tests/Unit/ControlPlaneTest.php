@@ -10,7 +10,6 @@ use GuzzleHttp\Psr7\Request;
 use Mbvb1223\Pinecone\Control\ControlPlane;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +31,115 @@ class ControlPlaneTest extends TestCase
         Mockery::close();
     }
 
-    // ===== Index control plane method tests =====
+    // ===== Index control plane success tests =====
+
+    public function testListIndexesSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"indexes":[{"name":"idx1"},{"name":"idx2"}]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->listIndexes();
+        $this->assertCount(2, $result);
+        $this->assertEquals('idx1', $result[0]['name']);
+    }
+
+    public function testCreateIndexSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"test-index","dimension":1536,"metric":"cosine"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/indexes', Mockery::on(function ($arg) {
+                $json = $arg['json'];
+
+                return $json['name'] === 'test-index'
+                    && $json['dimension'] === 1536
+                    && $json['metric'] === 'cosine';
+            }))
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createIndex('test-index', [
+            'dimension' => 1536,
+            'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']],
+        ]);
+        $this->assertEquals('test-index', $result['name']);
+    }
+
+    public function testCreateIndexPreservesOptionalFields(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"test-index","deletion_protection":"enabled"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/indexes', Mockery::on(function ($arg) {
+                $json = $arg['json'];
+
+                return $json['name'] === 'test-index'
+                    && $json['deletion_protection'] === 'enabled'
+                    && $json['vector_type'] === 'float';
+            }))
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createIndex('test-index', [
+            'dimension' => 1536,
+            'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']],
+            'deletion_protection' => 'enabled',
+            'vector_type' => 'float',
+        ]);
+        $this->assertEquals('enabled', $result['deletion_protection']);
+    }
+
+    public function testDescribeIndexSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"test-index","host":"test-host.pinecone.io"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes/test-index')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->describeIndex('test-index');
+        $this->assertEquals('test-index', $result['name']);
+        $this->assertEquals('test-host.pinecone.io', $result['host']);
+    }
+
+    public function testDeleteIndexSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(202);
+        $response->shouldReceive('getBody->getContents')->andReturn('');
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->with('/indexes/test-index')
+            ->andReturn($response);
+
+        $this->controlPlane->deleteIndex('test-index');
+        $this->assertTrue(true);
+    }
+
+    public function testConfigureIndexSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"test-index","deletion_protection":"enabled"}');
+        $this->httpClientMock->shouldReceive('patch')
+            ->once()
+            ->with('/indexes/test-index', ['json' => ['deletion_protection' => 'enabled']])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->configureIndex('test-index', ['deletion_protection' => 'enabled']);
+        $this->assertEquals('enabled', $result['deletion_protection']);
+    }
+
+    // ===== Index control plane error tests =====
 
     public function testListIndexesThrowsException(): void
     {
@@ -51,12 +158,7 @@ class ControlPlaneTest extends TestCase
     {
         $this->httpClientMock->shouldReceive('post')
             ->once()
-            ->with('/indexes', ['json' => [
-                'name' => 'test-index',
-                'dimension' => 1536,
-                'metric' => 'cosine',
-                'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']]
-            ]])
+            ->with('/indexes', Mockery::any())
             ->andThrow(new RequestException('Creation failed', new Request('POST', '/indexes')));
 
         $this->expectException(PineconeException::class);
@@ -64,7 +166,7 @@ class ControlPlaneTest extends TestCase
 
         $this->controlPlane->createIndex('test-index', [
             'dimension' => 1536,
-            'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']]
+            'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']],
         ]);
     }
 
@@ -81,7 +183,7 @@ class ControlPlaneTest extends TestCase
         $this->controlPlane->createForModel('test-index', [
             'cloud' => 'aws',
             'region' => 'us-east-1',
-            'embed' => ['model' => 'text-embedding-ada-002']
+            'embed' => ['model' => 'text-embedding-ada-002'],
         ]);
     }
 
