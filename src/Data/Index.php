@@ -24,7 +24,7 @@ class Index
     {
         try {
             $payload = [];
-            if ($filter) {
+            if ($filter !== null) {
                 $payload['filter'] = $filter;
             }
 
@@ -48,10 +48,19 @@ class Index
         }
     }
 
-    public function listImports(): array
+    public function listImports(?int $limit = null, ?string $paginationToken = null): array
     {
         try {
-            $response = $this->httpClient->get('/bulk/imports');
+            $params = [];
+            if ($limit !== null) {
+                $params['limit'] = $limit;
+            }
+            if ($paginationToken !== null) {
+                $params['paginationToken'] = $paginationToken;
+            }
+
+            $query = !empty($params) ? '?' . http_build_query($params) : '';
+            $response = $this->httpClient->get("/bulk/imports{$query}");
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -62,7 +71,7 @@ class Index
     public function describeImport(string $importId): array
     {
         try {
-            $response = $this->httpClient->get("/bulk/imports/{$importId}");
+            $response = $this->httpClient->get('/bulk/imports/' . urlencode($importId));
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -73,7 +82,7 @@ class Index
     public function cancelImport(string $importId): void
     {
         try {
-            $this->httpClient->delete("/bulk/imports/{$importId}");
+            $this->httpClient->delete('/bulk/imports/' . urlencode($importId));
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to cancel import: ' . $e->getMessage(), 0, $e);
         }
@@ -149,9 +158,9 @@ class Index
         return $this->dataPlane->delete($ids, $filter, $namespace, $deleteAll);
     }
 
-    public function update(string $id, array $values = [], ?array $setMetadata = null, ?string $namespace = null): array
+    public function update(string $id, array $values = [], ?array $setMetadata = null, ?string $namespace = null, ?array $sparseValues = null): array
     {
-        return $this->dataPlane->update($id, $values, $setMetadata, $namespace);
+        return $this->dataPlane->update($id, $values, $setMetadata, $namespace, $sparseValues);
     }
 
     public function listVectorIds(?string $prefix = null, ?int $limit = null, ?string $paginationToken = null, ?string $namespace = null): array

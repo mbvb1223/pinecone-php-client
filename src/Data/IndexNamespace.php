@@ -42,9 +42,9 @@ class IndexNamespace
         return $this->dataPlane->delete($ids, $filter, $this->namespace, $deleteAll);
     }
 
-    public function update(string $id, array $values = [], ?array $setMetadata = null): array
+    public function update(string $id, array $values = [], ?array $setMetadata = null, ?array $sparseValues = null): array
     {
-        return $this->dataPlane->update($id, $values, $setMetadata, $this->namespace);
+        return $this->dataPlane->update($id, $values, $setMetadata, $this->namespace, $sparseValues);
     }
 
     public function listVectorIds(?string $prefix = null, ?int $limit = null, ?string $paginationToken = null): array

@@ -21,7 +21,7 @@ class DataPlane
     {
         try {
             $payload = ['vectors' => $vectors];
-            if ($namespace) {
+            if ($namespace !== null) {
                 $payload['namespace'] = $namespace;
             }
 
@@ -56,19 +56,19 @@ class DataPlane
                 $payload['vector'] = $vector;
             }
 
-            if ($id) {
+            if ($id !== null) {
                 $payload['id'] = $id;
             }
 
-            if ($filter) {
+            if ($filter !== null) {
                 $payload['filter'] = $filter;
             }
 
-            if ($namespace) {
+            if ($namespace !== null) {
                 $payload['namespace'] = $namespace;
             }
 
-            if ($sparseVector) {
+            if ($sparseVector !== null) {
                 $payload['sparseVector'] = $sparseVector;
             }
 
@@ -87,7 +87,7 @@ class DataPlane
         try {
             $idQueries = implode('&', array_map(fn ($id) => 'ids=' . urlencode($id), $ids));
 
-            $namespaceQuery = $namespace ? '&namespace=' . urlencode($namespace) : '';
+            $namespaceQuery = $namespace !== null ? '&namespace=' . urlencode($namespace) : '';
 
             $response = $this->httpClient->get('/vectors/fetch?' . $idQueries . $namespaceQuery);
 
@@ -106,11 +106,11 @@ class DataPlane
                 $payload['deleteAll'] = true;
             } elseif (!empty($ids)) {
                 $payload['ids'] = $ids;
-            } elseif ($filter) {
+            } elseif ($filter !== null) {
                 $payload['filter'] = $filter;
             }
 
-            if ($namespace) {
+            if ($namespace !== null) {
                 $payload['namespace'] = $namespace;
             }
 
@@ -124,7 +124,7 @@ class DataPlane
         }
     }
 
-    public function update(string $id, array $values = [], ?array $setMetadata = null, ?string $namespace = null): array
+    public function update(string $id, array $values = [], ?array $setMetadata = null, ?string $namespace = null, ?array $sparseValues = null): array
     {
         try {
             $payload = ['id' => $id];
@@ -133,12 +133,16 @@ class DataPlane
                 $payload['values'] = $values;
             }
 
-            if ($setMetadata) {
+            if ($setMetadata !== null) {
                 $payload['setMetadata'] = $setMetadata;
             }
 
-            if ($namespace) {
+            if ($namespace !== null) {
                 $payload['namespace'] = $namespace;
+            }
+
+            if ($sparseValues !== null) {
+                $payload['sparseValues'] = $sparseValues;
             }
 
             $response = $this->httpClient->post('/vectors/update', [

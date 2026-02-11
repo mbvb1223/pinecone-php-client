@@ -257,6 +257,68 @@ class DataPlaneTest extends TestCase
         $this->assertIsArray($result);
     }
 
+    public function testUpdateWithSparseValues(): void
+    {
+        $sparseValues = ['indices' => [0, 3, 7], 'values' => [0.1, 0.5, 0.9]];
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/update', Mockery::on(function ($arg) use ($sparseValues) {
+                return $arg['json']['id'] === 'v1'
+                    && $arg['json']['sparseValues'] === $sparseValues;
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->update('v1', sparseValues: $sparseValues);
+        $this->assertIsArray($result);
+    }
+
+    public function testUpdateWithAllParams(): void
+    {
+        $sparseValues = ['indices' => [1], 'values' => [0.5]];
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/update', Mockery::on(function ($arg) use ($sparseValues) {
+                $json = $arg['json'];
+                return $json['id'] === 'v1'
+                    && $json['values'] === [0.5, 0.6]
+                    && $json['setMetadata'] === ['genre' => 'drama']
+                    && $json['namespace'] === 'ns1'
+                    && $json['sparseValues'] === $sparseValues;
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->update(
+            'v1',
+            [0.5, 0.6],
+            ['genre' => 'drama'],
+            'ns1',
+            $sparseValues
+        );
+        $this->assertIsArray($result);
+    }
+
+    public function testUpdateWithNullSparseValuesOmitsKey(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/update', Mockery::on(function ($arg) {
+                return !isset($arg['json']['sparseValues']);
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->update('v1', [0.1]);
+        $this->assertIsArray($result);
+    }
+
     public function testUpdateThrowsException(): void
     {
         $this->httpClientMock->shouldReceive('post')

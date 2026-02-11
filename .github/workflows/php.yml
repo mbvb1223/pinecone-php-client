@@ -2,38 +2,45 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "dev", "main" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "dev", "main" ]
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   build_test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.1', '8.2', '8.3', '8.4']
+
+    name: PHP ${{ matrix.php-version }}
     steps:
     - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: mbstring, json
+        coverage: xdebug
 
     - name: Validate composer.json
       run: composer validate --strict
 
     - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.json') }}
         restore-keys: |
-          ${{ runner.os }}-php-
+          ${{ runner.os }}-php-${{ matrix.php-version }}-
 
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
-
-    - name: Enable Xdebug
-      run: echo "XDEBUG_MODE=coverage" >> $GITHUB_ENV
+      run: composer install --prefer-dist --no-progress --no-interaction
 
     - name: Run CS checks
       run: composer run-script check
@@ -44,6 +51,7 @@ jobs:
       run: vendor/bin/phpunit --testdox --coverage-html ./tests/Reports
 
     - name: Upload coverage report
+      if: matrix.php-version == '8.3' && github.event_name == 'push'
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
@@ -52,7 +60,11 @@ jobs:
 
   upload-coverage-report:
     needs: build_test
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     steps:
       - name: Download coverage report artifact
         uses: actions/download-artifact@v4

@@ -14,6 +14,7 @@ Thumbs.db
 
 # Build artifacts
 .phpunit.result.cache
+tests/Reports/
 
 # Environment variables
 .env

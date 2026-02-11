@@ -206,4 +206,236 @@ class IndexTest extends TestCase
         $result = $this->index->listVectorIds(prefix: 'v');
         $this->assertCount(2, $result['vectors']);
     }
+
+    // ===== Import operations =====
+
+    public function testStartImportSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"id":"import-123"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/bulk/imports', ['json' => ['uri' => 's3://bucket/data.parquet']])
+            ->andReturn($response);
+
+        $result = $this->index->startImport(['uri' => 's3://bucket/data.parquet']);
+        $this->assertEquals('import-123', $result['id']);
+    }
+
+    public function testStartImportThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('POST', '/bulk/imports')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to start import: Network error');
+
+        $this->index->startImport(['uri' => 's3://bucket/data.parquet']);
+    }
+
+    public function testListImportsNoParams(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[{"id":"imp1"}]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/bulk/imports')
+            ->andReturn($response);
+
+        $result = $this->index->listImports();
+        $this->assertArrayHasKey('data', $result);
+    }
+
+    public function testListImportsWithLimit(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/bulk/imports?limit=5')
+            ->andReturn($response);
+
+        $result = $this->index->listImports(limit: 5);
+        $this->assertEmpty($result['data']);
+    }
+
+    public function testListImportsWithPaginationToken(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/bulk/imports?paginationToken=token123')
+            ->andReturn($response);
+
+        $result = $this->index->listImports(paginationToken: 'token123');
+        $this->assertEmpty($result['data']);
+    }
+
+    public function testListImportsWithAllParams(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[],"pagination":{"next":"token456"}}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/bulk/imports?limit=10&paginationToken=token123')
+            ->andReturn($response);
+
+        $result = $this->index->listImports(limit: 10, paginationToken: 'token123');
+        $this->assertArrayHasKey('pagination', $result);
+    }
+
+    public function testListImportsThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->andThrow(new RequestException('Error', new Request('GET', '/bulk/imports')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to list imports: Error');
+
+        $this->index->listImports();
+    }
+
+    public function testDescribeImportSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"id":"imp-123","status":"Completed"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/bulk/imports/imp-123')
+            ->andReturn($response);
+
+        $result = $this->index->describeImport('imp-123');
+        $this->assertEquals('Completed', $result['status']);
+    }
+
+    public function testDescribeImportUrlEncodes(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"id":"imp 123"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/bulk/imports/imp+123')
+            ->andReturn($response);
+
+        $result = $this->index->describeImport('imp 123');
+        $this->assertEquals('imp 123', $result['id']);
+    }
+
+    public function testDescribeImportThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->andThrow(new RequestException('Not found', new Request('GET', '/bulk/imports/imp-123')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to describe import: Not found');
+
+        $this->index->describeImport('imp-123');
+    }
+
+    public function testCancelImportSuccess(): void
+    {
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->with('/bulk/imports/imp-123')
+            ->andReturn(Mockery::mock(ResponseInterface::class));
+
+        $this->index->cancelImport('imp-123');
+        $this->assertTrue(true);
+    }
+
+    public function testCancelImportUrlEncodes(): void
+    {
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->with('/bulk/imports/imp+123')
+            ->andReturn(Mockery::mock(ResponseInterface::class));
+
+        $this->index->cancelImport('imp 123');
+        $this->assertTrue(true);
+    }
+
+    public function testCancelImportThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->andThrow(new RequestException('Error', new Request('DELETE', '/bulk/imports/imp-123')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to cancel import: Error');
+
+        $this->index->cancelImport('imp-123');
+    }
+
+    // ===== Update proxy with sparseValues =====
+
+    public function testUpdateProxyWithSparseValues(): void
+    {
+        $sparseValues = ['indices' => [0, 5], 'values' => [0.1, 0.9]];
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/update', Mockery::on(function ($arg) use ($sparseValues) {
+                return $arg['json']['id'] === 'v1'
+                    && $arg['json']['sparseValues'] === $sparseValues;
+            }))
+            ->andReturn($response);
+
+        $result = $this->index->update('v1', sparseValues: $sparseValues);
+        $this->assertIsArray($result);
+    }
+
+    public function testDeleteProxy(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/delete', Mockery::on(function ($arg) {
+                return $arg['json']['ids'] === ['v1', 'v2'];
+            }))
+            ->andReturn($response);
+
+        $result = $this->index->delete(ids: ['v1', 'v2']);
+        $this->assertIsArray($result);
+    }
+
+    // ===== namespace proxy =====
+
+    public function testNamespaceReturnsIndexNamespace(): void
+    {
+        $ns = $this->index->namespace('test-ns');
+        $this->assertInstanceOf(\Mbvb1223\Pinecone\Data\IndexNamespace::class, $ns);
+    }
+
+    // ===== describeIndexStats with filter =====
+
+    public function testDescribeIndexStatsWithFilter(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"dimension":1536,"totalVectorCount":5}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/describe_index_stats', Mockery::on(function ($arg) {
+                return isset($arg['json']->filter);
+            }))
+            ->andReturn($response);
+
+        $result = $this->index->describeIndexStats(['genre' => 'comedy']);
+        $this->assertEquals(5, $result['totalVectorCount']);
+    }
 }
