@@ -7,6 +7,7 @@ namespace Mbvb1223\Pinecone\Data;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Errors\PineconeValidationException;
 use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class DataPlane
@@ -84,8 +85,12 @@ class DataPlane
 
     public function fetch(array $ids, ?string $namespace = null): array
     {
+        if (empty($ids)) {
+            throw new PineconeValidationException('At least one vector ID is required for fetch.');
+        }
+
         try {
-            $idQueries = implode('&', array_map(fn ($id) => 'ids=' . urlencode($id), $ids));
+            $idQueries = implode('&', array_map(fn ($id) => 'ids=' . urlencode((string) $id), $ids));
 
             $namespaceQuery = $namespace !== null ? '&namespace=' . urlencode($namespace) : '';
 
@@ -104,10 +109,13 @@ class DataPlane
 
             if ($deleteAll) {
                 $payload['deleteAll'] = true;
-            } elseif (!empty($ids)) {
-                $payload['ids'] = $ids;
-            } elseif ($filter !== null) {
-                $payload['filter'] = $filter;
+            } else {
+                if (!empty($ids)) {
+                    $payload['ids'] = $ids;
+                }
+                if ($filter !== null) {
+                    $payload['filter'] = $filter;
+                }
             }
 
             if ($namespace !== null) {

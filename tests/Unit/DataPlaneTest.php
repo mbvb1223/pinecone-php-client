@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Mbvb1223\Pinecone\Data\DataPlane;
 use Mbvb1223\Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Errors\PineconeValidationException;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -460,6 +461,56 @@ class DataPlaneTest extends TestCase
             ->andReturn($response);
 
         $result = $this->dataPlane->delete(filter: $filter);
+        $this->assertIsArray($result);
+    }
+
+    // ===== Bug fix: fetch with empty ids =====
+
+    public function testFetchEmptyIdsThrowsValidationException(): void
+    {
+        $this->expectException(PineconeValidationException::class);
+        $this->expectExceptionMessage('At least one vector ID is required for fetch.');
+
+        $this->dataPlane->fetch([]);
+    }
+
+    // ===== Bug fix: delete with both ids and filter =====
+
+    public function testDeleteWithIdsAndFilterSendsBoth(): void
+    {
+        $ids = ['v1', 'v2'];
+        $filter = ['genre' => ['$eq' => 'comedy']];
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/delete', Mockery::on(function ($arg) use ($ids, $filter) {
+                return $arg['json']['ids'] === $ids
+                    && $arg['json']['filter'] === $filter
+                    && !isset($arg['json']['deleteAll']);
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->delete(ids: $ids, filter: $filter);
+        $this->assertIsArray($result);
+    }
+
+    public function testDeleteAllIgnoresIdsAndFilter(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/delete', Mockery::on(function ($arg) {
+                return $arg['json']['deleteAll'] === true
+                    && !isset($arg['json']['ids'])
+                    && !isset($arg['json']['filter']);
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->delete(ids: ['v1'], filter: ['genre' => ['$eq' => 'comedy']], deleteAll: true);
         $this->assertIsArray($result);
     }
 }

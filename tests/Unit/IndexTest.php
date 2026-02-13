@@ -450,4 +450,68 @@ class IndexTest extends TestCase
         $result = $this->index->describeIndexStats(['genre' => 'comedy']);
         $this->assertEquals(5, $result['totalVectorCount']);
     }
+
+    // ===== describeNamespace exception path =====
+
+    public function testDescribeNamespaceThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('POST', '/describe_index_stats')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to describe namespace: Network error');
+
+        $this->index->describeNamespace('ns1');
+    }
+
+    // ===== listNamespaces with missing namespaces key =====
+
+    public function testListNamespacesWithMissingNamespacesKey(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"dimension":1536,"totalVectorCount":0}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/describe_index_stats', Mockery::any())
+            ->andReturn($response);
+
+        $result = $this->index->listNamespaces();
+        $this->assertEmpty($result);
+        $this->assertIsArray($result);
+    }
+
+    // ===== namespace returns different instances =====
+
+    public function testNamespaceReturnsDifferentInstancesForDifferentNames(): void
+    {
+        $ns1 = $this->index->namespace('namespace-a');
+        $ns2 = $this->index->namespace('namespace-b');
+
+        $this->assertInstanceOf(\Mbvb1223\Pinecone\Data\IndexNamespace::class, $ns1);
+        $this->assertInstanceOf(\Mbvb1223\Pinecone\Data\IndexNamespace::class, $ns2);
+        $this->assertNotSame($ns1, $ns2);
+    }
+
+    // ===== describeIndexStats with no filter sends empty object =====
+
+    public function testDescribeIndexStatsNoFilterSendsEmptyObject(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"dimension":128,"totalVectorCount":0}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/describe_index_stats', Mockery::on(function ($arg) {
+                // Verify POST is called with json containing an empty stdClass (object)
+                return isset($arg['json'])
+                    && $arg['json'] instanceof \stdClass
+                    && empty((array) $arg['json']);
+            }))
+            ->andReturn($response);
+
+        $result = $this->index->describeIndexStats();
+        $this->assertEquals(128, $result['dimension']);
+    }
 }

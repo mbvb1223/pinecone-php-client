@@ -97,4 +97,90 @@ class PineconeApiExceptionTest extends TestCase
         $this->assertInstanceOf(PineconeException::class, $exception);
         $this->assertEquals('Invalid input', $exception->getMessage());
     }
+
+    // ===== PineconeValidationException detailed tests =====
+
+    public function testValidationExceptionConstructor(): void
+    {
+        $exception = new PineconeValidationException('Field is required', 100);
+        $this->assertEquals('Field is required', $exception->getMessage());
+        $this->assertEquals(100, $exception->getCode());
+    }
+
+    public function testValidationExceptionHierarchy(): void
+    {
+        $exception = new PineconeValidationException('Bad input');
+        $this->assertInstanceOf(PineconeException::class, $exception);
+        $this->assertInstanceOf(\Exception::class, $exception);
+    }
+
+    // ===== PineconeAuthException detailed tests =====
+
+    public function testAuthExceptionConstructor(): void
+    {
+        $exception = new PineconeAuthException('Forbidden', 403);
+        $this->assertEquals('Forbidden', $exception->getMessage());
+        $this->assertEquals(403, $exception->getCode());
+    }
+
+    public function testAuthExceptionHierarchy(): void
+    {
+        $exception = new PineconeAuthException('Unauthorized', 401);
+        $this->assertInstanceOf(PineconeException::class, $exception);
+        $this->assertInstanceOf(\Exception::class, $exception);
+    }
+
+    public function testAuthExceptionWithPreviousThrowable(): void
+    {
+        $previous = new \RuntimeException('Original auth error');
+        $exception = new PineconeAuthException('Auth failed', 401, $previous);
+        $this->assertSame($previous, $exception->getPrevious());
+        $this->assertEquals('Auth failed', $exception->getMessage());
+        $this->assertEquals(401, $exception->getCode());
+    }
+
+    // ===== PineconeTimeoutException detailed tests =====
+
+    public function testTimeoutExceptionConstructor(): void
+    {
+        $exception = new PineconeTimeoutException('Gateway Timeout', 504);
+        $this->assertEquals('Gateway Timeout', $exception->getMessage());
+        $this->assertEquals(504, $exception->getCode());
+    }
+
+    public function testTimeoutExceptionHierarchy(): void
+    {
+        $exception = new PineconeTimeoutException('Timeout', 408);
+        $this->assertInstanceOf(PineconeException::class, $exception);
+        $this->assertInstanceOf(\Exception::class, $exception);
+    }
+
+    public function testTimeoutExceptionWithPreviousThrowable(): void
+    {
+        $previous = new \RuntimeException('Connection timed out');
+        $exception = new PineconeTimeoutException('Request timed out', 408, $previous);
+        $this->assertSame($previous, $exception->getPrevious());
+        $this->assertEquals('Request timed out', $exception->getMessage());
+        $this->assertEquals(408, $exception->getCode());
+    }
+
+    // ===== All exceptions catchable as PineconeException =====
+
+    public function testAllExceptionsCaughtAsPineconeException(): void
+    {
+        $exceptions = [
+            new PineconeApiException('API error', 500),
+            new PineconeAuthException('Auth error', 401),
+            new PineconeTimeoutException('Timeout', 408),
+            new PineconeValidationException('Validation error'),
+        ];
+
+        foreach ($exceptions as $exception) {
+            try {
+                throw $exception;
+            } catch (PineconeException $caught) {
+                $this->assertSame($exception, $caught);
+            }
+        }
+    }
 }

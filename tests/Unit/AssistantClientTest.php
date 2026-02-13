@@ -260,6 +260,25 @@ class AssistantClientTest extends TestCase
         $this->assistant->deleteFile('file-123');
     }
 
+    // ===== uploadFile fopen failure =====
+
+    public function testUploadFileCannotOpenThrows(): void
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'pinecone_test_');
+        file_put_contents($tmpFile, 'test content');
+        chmod($tmpFile, 0000);
+
+        try {
+            $this->expectException(PineconeValidationException::class);
+            $this->expectExceptionMessage("Cannot open file: {$tmpFile}");
+
+            $this->assistant->uploadFile($tmpFile);
+        } finally {
+            chmod($tmpFile, 0644);
+            unlink($tmpFile);
+        }
+    }
+
     // ===== URL encoding =====
 
     public function testAssistantNameIsUrlEncoded(): void
