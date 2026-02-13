@@ -104,12 +104,15 @@ class DataPlane
         }
 
         try {
-            $params = ['ids' => $ids];
+            // Pinecone expects repeated query params (ids=vec1&ids=vec2),
+            // not PHP-style array params (ids[0]=vec1&ids[1]=vec2),
+            // so we build the query string manually.
+            $query = implode('&', array_map(fn ($id) => 'ids=' . urlencode((string) $id), $ids));
             if ($namespace !== null) {
-                $params['namespace'] = $namespace;
+                $query .= '&namespace=' . urlencode($namespace);
             }
 
-            $response = $this->httpClient->get('/vectors/fetch', ['query' => $params]);
+            $response = $this->httpClient->get('/vectors/fetch?' . $query);
 
             return $this->handleResponse($response)['vectors'] ?? [];
         } catch (GuzzleException $e) {

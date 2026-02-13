@@ -155,10 +155,7 @@ class DataPlaneTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"vectors":{"v1":{"id":"v1","values":[0.1]},"v2":{"id":"v2","values":[0.2]}}}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/vectors/fetch', Mockery::on(function ($arg) {
-                return $arg['query']['ids'] === ['v1', 'v2']
-                    && !isset($arg['query']['namespace']);
-            }))
+            ->with('/vectors/fetch?ids=v1&ids=v2')
             ->andReturn($response);
 
         $result = $this->dataPlane->fetch(['v1', 'v2']);
@@ -532,10 +529,7 @@ class DataPlaneTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"vectors":{"v1":{"id":"v1"}}}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/vectors/fetch', Mockery::on(function ($arg) {
-                return $arg['query']['ids'] === ['v1']
-                    && $arg['query']['namespace'] === 'my-ns';
-            }))
+            ->with('/vectors/fetch?ids=v1&namespace=my-ns')
             ->andReturn($response);
 
         $result = $this->dataPlane->fetch(['v1'], 'my-ns');

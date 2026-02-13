@@ -198,10 +198,7 @@ class IndexTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"vectors":{"v1":{"id":"v1","values":[0.1]}}}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/vectors/fetch', Mockery::on(function ($arg) {
-                return $arg['query']['ids'] === ['v1']
-                    && !isset($arg['query']['namespace']);
-            }))
+            ->with('/vectors/fetch?ids=v1')
             ->andReturn($response);
 
         $result = $this->index->fetch(['v1']);

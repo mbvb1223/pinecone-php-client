@@ -90,10 +90,7 @@ class IndexNamespaceTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"vectors":{"v1":{"id":"v1"}}}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/vectors/fetch', Mockery::on(function ($arg) {
-                return $arg['query']['ids'] === ['v1']
-                    && $arg['query']['namespace'] === 'test-ns';
-            }))
+            ->with('/vectors/fetch?ids=v1&namespace=test-ns')
             ->andReturn($response);
 
         $result = $this->indexNamespace->fetch(['v1']);
