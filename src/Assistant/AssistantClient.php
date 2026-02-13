@@ -18,6 +18,7 @@ class AssistantClient
     private Client $httpClient;
     private string $assistantName;
 
+    /** @param array<string, mixed> $assistantInfo */
     public function __construct(Configuration $config, string $assistantName, array $assistantInfo = [])
     {
         $host = $assistantInfo['host'] ?? null;
@@ -34,9 +35,9 @@ class AssistantClient
     /**
      * Chat with the assistant.
      *
-     * @param array $messages Array of message objects (e.g., [['role' => 'user', 'content' => 'Hello']]).
-     * @param array $options Additional options for the chat request.
-     * @return array The chat response.
+     * @param array<int, array{role: string, content: string}> $messages Array of message objects.
+     * @param array<string, mixed> $options Additional options for the chat request.
+     * @return array<string, mixed> The chat response.
      */
     public function chat(array $messages, array $options = []): array
     {
