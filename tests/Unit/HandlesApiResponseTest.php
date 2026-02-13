@@ -247,4 +247,55 @@ class HandlesApiResponseTest extends TestCase
 
         $this->handler->handle($response);
     }
+
+    // ===== Edge case: status 399 is success =====
+
+    public function testStatus399IsSuccess(): void
+    {
+        $response = $this->mockResponse(399, '{"result":"ok"}');
+        $result = $this->handler->handle($response);
+        $this->assertEquals(['result' => 'ok'], $result);
+    }
+
+    // ===== Edge case: status 400 is first error =====
+
+    public function testStatus400ThrowsApiException(): void
+    {
+        $response = $this->mockResponse(400, '{"message":"Bad Request"}');
+
+        $this->expectException(PineconeApiException::class);
+        $this->expectExceptionMessage('Bad Request');
+        $this->expectExceptionCode(400);
+
+        $this->handler->handle($response);
+    }
+
+    // ===== Edge case: error as string from $data['error'] =====
+
+    public function testErrorStringFromErrorKey(): void
+    {
+        $response = $this->mockResponse(422, '{"error":"Unprocessable entity"}');
+
+        try {
+            $this->handler->handle($response);
+            $this->fail('Expected PineconeApiException');
+        } catch (PineconeApiException $e) {
+            $this->assertEquals('Unprocessable entity', $e->getMessage());
+            $this->assertEquals(422, $e->getStatusCode());
+            $this->assertEquals(['error' => 'Unprocessable entity'], $e->getResponseData());
+        }
+    }
+
+    // ===== Edge case: null/empty body on error =====
+
+    public function testEmptyBodyOnErrorUsesFallbackMessage(): void
+    {
+        $response = $this->mockResponse(500, '');
+
+        $this->expectException(PineconeApiException::class);
+        $this->expectExceptionMessage('API request failed');
+        $this->expectExceptionCode(500);
+
+        $this->handler->handle($response);
+    }
 }

@@ -72,13 +72,18 @@ class AssistantClient
             throw new PineconeValidationException("File not found: {$filePath}");
         }
 
+        $fileHandle = @fopen($filePath, 'r');
+        if ($fileHandle === false) {
+            throw new PineconeValidationException("Cannot open file: {$filePath}");
+        }
+
         try {
             $encodedName = urlencode($this->assistantName);
             $response = $this->httpClient->post("/assistant/files/{$encodedName}", [
                 'multipart' => [
                     [
                         'name' => 'file',
-                        'contents' => fopen($filePath, 'r'),
+                        'contents' => $fileHandle,
                         'filename' => basename($filePath),
                     ],
                 ],
@@ -87,6 +92,10 @@ class AssistantClient
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to upload file to assistant: ' . $e->getMessage(), 0, $e);
+        } finally {
+            if (is_resource($fileHandle)) {
+                fclose($fileHandle);
+            }
         }
     }
 

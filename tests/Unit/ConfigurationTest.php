@@ -167,6 +167,10 @@ class ConfigurationTest extends TestCase
     public function testApiKeyFromEnvironment(): void
     {
         $original = getenv('PINECONE_API_KEY');
+        $originalEnv = $_ENV['PINECONE_API_KEY'] ?? null;
+
+        // Clear $_ENV so getenv() path is tested
+        unset($_ENV['PINECONE_API_KEY']);
         putenv('PINECONE_API_KEY=env-api-key');
 
         try {
@@ -178,6 +182,57 @@ class ConfigurationTest extends TestCase
             } else {
                 putenv('PINECONE_API_KEY');
             }
+            if ($originalEnv !== null) {
+                $_ENV['PINECONE_API_KEY'] = $originalEnv;
+            }
         }
+    }
+
+    public function testApiKeyFromEnvSuperglobal(): void
+    {
+        $originalGetenv = getenv('PINECONE_API_KEY');
+        $originalEnv = $_ENV['PINECONE_API_KEY'] ?? null;
+
+        // Clear getenv and set $_ENV directly
+        putenv('PINECONE_API_KEY');
+        $_ENV['PINECONE_API_KEY'] = 'env-superglobal-key';
+
+        try {
+            $config = new Configuration(null);
+            $this->assertEquals('env-superglobal-key', $config->getApiKey());
+        } finally {
+            if ($originalGetenv !== false) {
+                putenv("PINECONE_API_KEY={$originalGetenv}");
+            } else {
+                putenv('PINECONE_API_KEY');
+            }
+            if ($originalEnv !== null) {
+                $_ENV['PINECONE_API_KEY'] = $originalEnv;
+            } else {
+                unset($_ENV['PINECONE_API_KEY']);
+            }
+        }
+    }
+
+    public function testConstructorWithNullConfig(): void
+    {
+        $config = new Configuration('test-api-key', null);
+        $this->assertEquals('test-api-key', $config->getApiKey());
+        $this->assertEquals('https://api.pinecone.io', $config->getControllerHost());
+        $this->assertEquals(30, $config->getTimeout());
+    }
+
+    public function testConstructorWithEmptyConfigArray(): void
+    {
+        $config = new Configuration('test-api-key', []);
+        $this->assertEquals('test-api-key', $config->getApiKey());
+        $this->assertEquals('https://api.pinecone.io', $config->getControllerHost());
+        $this->assertEquals(30, $config->getTimeout());
+    }
+
+    public function testDefaultAdditionalHeadersEmpty(): void
+    {
+        $config = new Configuration('test-api-key');
+        $this->assertEquals([], $config->getAdditionalHeaders());
     }
 }

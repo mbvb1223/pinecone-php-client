@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Mbvb1223\Pinecone\Tests\Unit;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
 use Mbvb1223\Pinecone\Data\DataPlane;
 use Mbvb1223\Pinecone\Data\IndexNamespace;
+use Mbvb1223\Pinecone\Errors\PineconeException;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -191,5 +194,119 @@ class IndexNamespaceTest extends TestCase
 
         $result = $this->indexNamespace->listVectorIds(prefix: 'doc', limit: 5);
         $this->assertEmpty($result['vectors']);
+    }
+
+    // ===== exception tests =====
+
+    public function testUpsertThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('POST', '/vectors/upsert')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to upsert vectors: Network error');
+
+        $this->indexNamespace->upsert([['id' => 'v1', 'values' => [0.1]]]);
+    }
+
+    public function testQueryThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('POST', '/query')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to query vectors: Network error');
+
+        $this->indexNamespace->query(vector: [0.1]);
+    }
+
+    public function testFetchThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('GET', '/vectors/fetch')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to fetch vectors: Network error');
+
+        $this->indexNamespace->fetch(['v1']);
+    }
+
+    public function testDeleteThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('POST', '/vectors/delete')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to delete vectors: Network error');
+
+        $this->indexNamespace->delete(ids: ['v1']);
+    }
+
+    public function testUpdateThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('POST', '/vectors/update')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to update vector: Network error');
+
+        $this->indexNamespace->update('v1', [0.1]);
+    }
+
+    public function testListVectorIdsThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('GET', '/vectors/list')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to list vector IDs: Network error');
+
+        $this->indexNamespace->listVectorIds();
+    }
+
+    // ===== filter pass-through tests =====
+
+    public function testQueryWithFilter(): void
+    {
+        $filter = ['genre' => ['$eq' => 'comedy']];
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"matches":[]}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/query', Mockery::on(function ($arg) use ($filter) {
+                return $arg['json']['filter'] === $filter
+                    && $arg['json']['namespace'] === 'test-ns';
+            }))
+            ->andReturn($response);
+
+        $result = $this->indexNamespace->query(vector: [0.1, 0.2], filter: $filter);
+        $this->assertEmpty($result['matches']);
+    }
+
+    public function testDeleteWithFilter(): void
+    {
+        $filter = ['genre' => ['$eq' => 'comedy']];
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/delete', Mockery::on(function ($arg) use ($filter) {
+                return $arg['json']['filter'] === $filter
+                    && $arg['json']['namespace'] === 'test-ns'
+                    && !isset($arg['json']['ids'])
+                    && !isset($arg['json']['deleteAll']);
+            }))
+            ->andReturn($response);
+
+        $result = $this->indexNamespace->delete(filter: $filter);
+        $this->assertIsArray($result);
     }
 }
