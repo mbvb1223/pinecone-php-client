@@ -83,7 +83,6 @@ $pinecone = new Pinecone();
 
 ```php
 $pinecone = new Pinecone('your-api-key', [
-    'environment' => 'us-east1-aws',
     'controllerHost' => 'https://api.pinecone.io',
     'timeout' => 30,
     'additionalHeaders' => [
@@ -384,11 +383,11 @@ $pinecone->createAssistant([
 $assistant = $pinecone->assistant('my-assistant');
 
 // Chat with the assistant
-$response = $assistant->chat('my-assistant', [
+$response = $assistant->chat([
     ['role' => 'user', 'content' => 'How do I return an item?']
 ]);
 
-echo $response['choices'][0]['message']['content'];
+echo $response['message']['content'];
 
 // List all assistants
 $assistants = $pinecone->listAssistants();
