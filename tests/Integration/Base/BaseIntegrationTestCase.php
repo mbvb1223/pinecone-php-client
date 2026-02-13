@@ -21,11 +21,24 @@ class BaseIntegrationTestCase extends TestCase
     {
         parent::setUp();
 
-        $apiKey = getenv('PINECONE_API_KEY') ?: '';
+        $apiKey = getenv('PINECONE_API_KEY') ?: ($_ENV['PINECONE_API_KEY'] ?? '');
         if (!$apiKey) {
             $this->markTestSkipped('PINECONE_API_KEY environment variable not set');
         }
 
         $this->pinecone = new Pinecone($apiKey);
+    }
+
+    protected function waitForIndexReady(string $indexName, int $timeoutSeconds = 120): void
+    {
+        $start = time();
+        while (time() - $start < $timeoutSeconds) {
+            $info = $this->pinecone->describeIndex($indexName);
+            if (($info['status']['ready'] ?? false) === true) {
+                return;
+            }
+            sleep(5);
+        }
+        $this->fail("Index '$indexName' did not become ready within {$timeoutSeconds} seconds.");
     }
 }

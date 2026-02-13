@@ -22,6 +22,7 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
                 ]
             ]
         ]);
+        $this->waitForIndexReady($indexName);
 
         $index = $this->pinecone->index($indexName);
         $namespace = $index->namespace('khien');

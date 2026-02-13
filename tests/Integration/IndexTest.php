@@ -72,6 +72,7 @@ class IndexTest extends BaseIntegrationTestCase
     {
         $indexName = BaseIntegrationTestCase::INDEX_NAMES[4];
         $this->createIndexName($indexName);
+        $this->waitForIndexReady($indexName);
         $index = $this->pinecone->index($indexName);
         $result = $index->describeIndexStats();
         $this->assertIsArray($result);
