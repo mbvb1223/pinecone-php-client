@@ -14,7 +14,7 @@ class SetupIntegration implements Extension
     public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
     {
         echo "\n🚀 Starting Integration Test Suite Setup...\n";
-        $pinecone = new Pinecone(getenv('PINECONE_API_KEY'));
+        $pinecone = new Pinecone();
         foreach (BaseIntegrationTestCase::INDEX_NAMES as $index) {
             try {
                 $pinecone->deleteIndex($index);

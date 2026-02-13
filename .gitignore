@@ -14,9 +14,11 @@ Thumbs.db
 
 # Build artifacts
 .phpunit.result.cache
+tests/Reports/
 
 # Environment variables
 .env
+.env.test
 
 # Cache
 .php-cs-fixer.cache

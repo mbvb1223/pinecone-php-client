@@ -8,37 +8,8 @@ use Exception;
 
 class PineconeException extends Exception
 {
-    public function __construct(string $message = '', int $code = 0, ?Exception $previous = null)
+    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
-}
-
-class PineconeApiException extends PineconeException
-{
-    private array $responseData;
-
-    public function __construct(string $message, int $statusCode, array $responseData = [], ?Exception $previous = null)
-    {
-        $this->responseData = $responseData;
-
-        parent::__construct($message, $statusCode, $previous);
-    }
-
-    public function getResponseData(): array
-    {
-        return $this->responseData;
-    }
-}
-
-class PineconeAuthException extends PineconeException
-{
-}
-
-class PineconeValidationException extends PineconeException
-{
-}
-
-class PineconeTimeoutException extends PineconeException
-{
 }
