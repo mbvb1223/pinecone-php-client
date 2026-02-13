@@ -149,6 +149,18 @@ class IndexTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function testDeleteNamespaceThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->andThrow(new RequestException('Network error', new Request('POST', '/vectors/delete')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to delete namespace: Network error');
+
+        $this->index->deleteNamespace('ns1');
+    }
+
     // ===== proxy methods =====
 
     public function testUpsertProxy(): void

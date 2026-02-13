@@ -388,4 +388,78 @@ class DataPlaneTest extends TestCase
 
         $this->dataPlane->listVectorIds();
     }
+
+    // ===== query with filter =====
+
+    public function testQueryWithFilter(): void
+    {
+        $filter = ['genre' => ['$eq' => 'comedy']];
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"matches":[{"id":"v1","score":0.9}]}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/query', Mockery::on(function ($arg) use ($filter) {
+                return $arg['json']['filter'] === $filter
+                    && $arg['json']['vector'] === [0.1, 0.2]
+                    && $arg['json']['topK'] === 5;
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->query(vector: [0.1, 0.2], topK: 5, filter: $filter);
+        $this->assertCount(1, $result['matches']);
+    }
+
+    public function testQueryWithIncludeValuesTrue(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"matches":[{"id":"v1","score":0.9,"values":[0.1,0.2]}]}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/query', Mockery::on(function ($arg) {
+                return $arg['json']['includeValues'] === true;
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->query(vector: [0.1, 0.2], includeValues: true);
+        $this->assertArrayHasKey('values', $result['matches'][0]);
+    }
+
+    public function testQueryWithIncludeMetadataFalse(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"matches":[{"id":"v1","score":0.9}]}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/query', Mockery::on(function ($arg) {
+                return $arg['json']['includeMetadata'] === false;
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->query(vector: [0.1, 0.2], includeMetadata: false);
+        $this->assertCount(1, $result['matches']);
+    }
+
+    // ===== delete with filter =====
+
+    public function testDeleteWithFilter(): void
+    {
+        $filter = ['genre' => ['$eq' => 'comedy']];
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/vectors/delete', Mockery::on(function ($arg) use ($filter) {
+                return $arg['json']['filter'] === $filter
+                    && !isset($arg['json']['ids'])
+                    && !isset($arg['json']['deleteAll']);
+            }))
+            ->andReturn($response);
+
+        $result = $this->dataPlane->delete(filter: $filter);
+        $this->assertIsArray($result);
+    }
 }
