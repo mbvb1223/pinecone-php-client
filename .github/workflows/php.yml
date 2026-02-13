@@ -60,7 +60,6 @@ jobs:
         retention-days: 2
 
   integration-tests:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
