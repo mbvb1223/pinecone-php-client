@@ -6,12 +6,13 @@ namespace Mbvb1223\Pinecone\Control;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Psr\Http\Message\ResponseInterface;
+use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class ControlPlane
 {
+    use HandlesApiResponse;
+
     public function __construct(private readonly Client $httpClient)
     {
     }
@@ -31,12 +32,7 @@ class ControlPlane
     public function createIndex(string $name, array $requestData): array
     {
         try {
-            $payload = [
-                'name' => $name,
-                'dimension' => $requestData['dimension'],
-                'metric' => $requestData['metric'] ?? 'cosine',
-                'spec' => $requestData['spec'],
-            ];
+            $payload = array_merge(['metric' => 'cosine'], $requestData, ['name' => $name]);
 
             $response = $this->httpClient->post('/indexes', ['json' => $payload]);
 
@@ -62,7 +58,8 @@ class ControlPlane
     public function describeIndex(string $name): array
     {
         try {
-            $response = $this->httpClient->get("/indexes/{$name}");
+            $encodedName = urlencode($name);
+            $response = $this->httpClient->get("/indexes/{$encodedName}");
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -73,7 +70,8 @@ class ControlPlane
     public function deleteIndex(string $name): void
     {
         try {
-            $response = $this->httpClient->delete("/indexes/{$name}");
+            $encodedName = urlencode($name);
+            $response = $this->httpClient->delete("/indexes/{$encodedName}");
             $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to delete index: $name. {$e->getMessage()}", 0, $e);
@@ -83,7 +81,8 @@ class ControlPlane
     public function configureIndex(string $name, array $requestData): array
     {
         try {
-            $response = $this->httpClient->patch("/indexes/{$name}", ['json' => $requestData]);
+            $encodedName = urlencode($name);
+            $response = $this->httpClient->patch("/indexes/{$encodedName}", ['json' => $requestData]);
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -118,7 +117,8 @@ class ControlPlane
     public function describeCollection(string $name): array
     {
         try {
-            $response = $this->httpClient->get("/collections/{$name}");
+            $encodedName = urlencode($name);
+            $response = $this->httpClient->get("/collections/{$encodedName}");
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -129,7 +129,8 @@ class ControlPlane
     public function deleteCollection(string $name): void
     {
         try {
-            $response = $this->httpClient->delete("/collections/{$name}");
+            $encodedName = urlencode($name);
+            $response = $this->httpClient->delete("/collections/{$encodedName}");
             $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to delete collection: $name. {$e->getMessage()}", 0, $e);
@@ -154,7 +155,7 @@ class ControlPlane
             $response = $this->httpClient->get('/backups');
             $data = $this->handleResponse($response);
 
-            return $data['backups'] ?? [];
+            return $data['data'] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list backups: ' . $e->getMessage(), 0, $e);
         }
@@ -163,7 +164,8 @@ class ControlPlane
     public function describeBackup(string $id): array
     {
         try {
-            $response = $this->httpClient->get("/backups/{$id}");
+            $encodedId = urlencode($id);
+            $response = $this->httpClient->get("/backups/{$encodedId}");
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -174,7 +176,8 @@ class ControlPlane
     public function deleteBackup(string $id): void
     {
         try {
-            $response = $this->httpClient->delete("/backups/{$id}");
+            $encodedId = urlencode($id);
+            $response = $this->httpClient->delete("/backups/{$encodedId}");
             $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to delete backup: $id. {$e->getMessage()}", 0, $e);
@@ -182,14 +185,26 @@ class ControlPlane
     }
 
     // Restore methods
+    public function createIndexFromBackup(string $backupId, array $config): array
+    {
+        try {
+            $encodedId = urlencode($backupId);
+            $response = $this->httpClient->post("/backups/{$encodedId}/create-index", ['json' => $config]);
+
+            return $this->handleResponse($response);
+        } catch (GuzzleException $e) {
+            throw new PineconeException("Failed to create index from backup: $backupId. {$e->getMessage()}", 0, $e);
+        }
+    }
+
     public function listRestoreJobs(array $params = []): array
     {
         try {
-            $query = !empty($params) ? '?' . http_build_query($params) : '';
-            $response = $this->httpClient->get("/restore{$query}");
+            $options = !empty($params) ? ['query' => $params] : [];
+            $response = $this->httpClient->get('/restore-jobs', $options);
             $data = $this->handleResponse($response);
 
-            return $data['jobs'] ?? [];
+            return $data['data'] ?? [];
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to list restore jobs: ' . $e->getMessage(), 0, $e);
         }
@@ -198,7 +213,8 @@ class ControlPlane
     public function describeRestoreJob(string $id): array
     {
         try {
-            $response = $this->httpClient->get("/restore/{$id}");
+            $encodedId = urlencode($id);
+            $response = $this->httpClient->get("/restore-jobs/{$encodedId}");
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -233,7 +249,8 @@ class ControlPlane
     public function describeAssistant(string $name): array
     {
         try {
-            $response = $this->httpClient->get("/assistants/{$name}");
+            $encodedName = urlencode($name);
+            $response = $this->httpClient->get("/assistants/{$encodedName}");
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -244,7 +261,8 @@ class ControlPlane
     public function updateAssistant(string $name, array $config): array
     {
         try {
-            $response = $this->httpClient->patch("/assistants/{$name}", ['json' => $config]);
+            $encodedName = urlencode($name);
+            $response = $this->httpClient->patch("/assistants/{$encodedName}", ['json' => $config]);
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -255,33 +273,11 @@ class ControlPlane
     public function deleteAssistant(string $name): void
     {
         try {
-            $response = $this->httpClient->delete("/assistants/{$name}");
+            $encodedName = urlencode($name);
+            $response = $this->httpClient->delete("/assistants/{$encodedName}");
             $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException("Failed to delete assistant: $name. {$e->getMessage()}", 0, $e);
         }
-    }
-
-    private function handleResponse(ResponseInterface $response): array
-    {
-        $statusCode = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
-
-        if ($statusCode >= 400) {
-            $data = json_decode($body, true) ?? [];
-            $message = $data['message'] ?? 'API request failed';
-            throw new PineconeApiException($message, $statusCode, $data);
-        }
-
-        if (empty($body)) {
-            return [];
-        }
-
-        $decoded = json_decode($body, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new PineconeException('Failed to decode JSON response: ' . json_last_error_msg());
-        }
-
-        return $decoded;
     }
 }

@@ -7,83 +7,50 @@ namespace Mbvb1223\Pinecone\Assistant;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Mbvb1223\Pinecone\Utils\Configuration;
-use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Psr\Http\Message\ResponseInterface;
+use Mbvb1223\Pinecone\Errors\PineconeValidationException;
+use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class AssistantClient
 {
-    private Client $httpClient;
-    private Configuration $config;
+    use HandlesApiResponse;
 
-    public function __construct(Configuration $config)
+    private Client $httpClient;
+    private string $assistantName;
+
+    public function __construct(Configuration $config, string $assistantName, array $assistantInfo = [])
     {
-        $this->config = $config;
+        $host = $assistantInfo['host'] ?? null;
+        $baseUri = $host ? "https://{$host}" : $config->getControllerHost();
+
+        $this->assistantName = $assistantName;
         $this->httpClient = new Client([
-            'base_uri' => 'https://api.pinecone.io',
+            'base_uri' => $baseUri,
             'timeout' => $config->getTimeout(),
             'headers' => $config->getDefaultHeaders(),
         ]);
     }
 
-    public function createAssistant(string $name, array $instructions = []): array
+    /**
+     * Chat with the assistant.
+     *
+     * @param array $messages Array of message objects (e.g., [['role' => 'user', 'content' => 'Hello']]).
+     * @param array $options Additional options for the chat request.
+     * @return array The chat response.
+     */
+    public function chat(array $messages, array $options = []): array
     {
-        try {
-            $payload = [
-                'name' => $name,
-                'instructions' => $instructions,
-            ];
-
-            $response = $this->httpClient->post('/assistants', [
-                'json' => $payload,
-            ]);
-
-            return $this->handleResponse($response);
-        } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to create assistant: ' . $e->getMessage(), 0, $e);
+        if (empty($messages)) {
+            throw new PineconeValidationException('At least one message is required for chat.');
         }
-    }
 
-    public function listAssistants(): array
-    {
-        try {
-            $response = $this->httpClient->get('/assistants');
-
-            return $this->handleResponse($response);
-        } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to list assistants: ' . $e->getMessage(), 0, $e);
-        }
-    }
-
-    public function describeAssistant(string $assistantName): array
-    {
-        try {
-            $response = $this->httpClient->get("/assistants/{$assistantName}");
-
-            return $this->handleResponse($response);
-        } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to describe assistant: ' . $e->getMessage(), 0, $e);
-        }
-    }
-
-    public function deleteAssistant(string $assistantName): void
-    {
-        try {
-            $response = $this->httpClient->delete("/assistants/{$assistantName}");
-            $this->handleResponse($response);
-        } catch (GuzzleException $e) {
-            throw new PineconeException('Failed to delete assistant: ' . $e->getMessage(), 0, $e);
-        }
-    }
-
-    public function chat(string $assistantName, array $messages, array $options = []): array
-    {
         try {
             $payload = array_merge([
                 'messages' => $messages,
             ], $options);
 
-            $response = $this->httpClient->post("/assistants/{$assistantName}/chat", [
+            $encodedName = urlencode($this->assistantName);
+            $response = $this->httpClient->post("/assistant/chat/{$encodedName}/completions", [
                 'json' => $payload,
             ]);
 
@@ -93,26 +60,86 @@ class AssistantClient
         }
     }
 
-    private function handleResponse(ResponseInterface $response): array
+    /**
+     * Upload a file to the assistant's knowledge base.
+     *
+     * @param string $filePath Path to the file to upload.
+     * @return array The upload response.
+     */
+    public function uploadFile(string $filePath): array
     {
-        $statusCode = $response->getStatusCode();
-        $body = $response->getBody()->getContents();
-
-        if ($statusCode >= 400) {
-            $data = json_decode($body, true) ?? [];
-            $message = $data['message'] ?? 'API request failed';
-            throw new PineconeApiException($message, $statusCode, $data);
+        if (!file_exists($filePath)) {
+            throw new PineconeValidationException("File not found: {$filePath}");
         }
 
-        if (empty($body)) {
-            return [];
-        }
+        try {
+            $encodedName = urlencode($this->assistantName);
+            $response = $this->httpClient->post("/assistant/files/{$encodedName}", [
+                'multipart' => [
+                    [
+                        'name' => 'file',
+                        'contents' => fopen($filePath, 'r'),
+                        'filename' => basename($filePath),
+                    ],
+                ],
+            ]);
 
-        $decoded = json_decode($body, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new PineconeException('Failed to decode JSON response: ' . json_last_error_msg());
+            return $this->handleResponse($response);
+        } catch (GuzzleException $e) {
+            throw new PineconeException('Failed to upload file to assistant: ' . $e->getMessage(), 0, $e);
         }
+    }
 
-        return $decoded;
+    /**
+     * List files uploaded to the assistant.
+     *
+     * @return array The list of files.
+     */
+    public function listFiles(): array
+    {
+        try {
+            $encodedName = urlencode($this->assistantName);
+            $response = $this->httpClient->get("/assistant/files/{$encodedName}");
+
+            return $this->handleResponse($response);
+        } catch (GuzzleException $e) {
+            throw new PineconeException('Failed to list assistant files: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * Describe a specific file uploaded to the assistant.
+     *
+     * @param string $fileId The file ID.
+     * @return array The file details.
+     */
+    public function describeFile(string $fileId): array
+    {
+        try {
+            $encodedName = urlencode($this->assistantName);
+            $encodedFileId = urlencode($fileId);
+            $response = $this->httpClient->get("/assistant/files/{$encodedName}/{$encodedFileId}");
+
+            return $this->handleResponse($response);
+        } catch (GuzzleException $e) {
+            throw new PineconeException('Failed to describe assistant file: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * Delete a file from the assistant.
+     *
+     * @param string $fileId The file ID.
+     */
+    public function deleteFile(string $fileId): void
+    {
+        try {
+            $encodedName = urlencode($this->assistantName);
+            $encodedFileId = urlencode($fileId);
+            $response = $this->httpClient->delete("/assistant/files/{$encodedName}/{$encodedFileId}");
+            $this->handleResponse($response);
+        } catch (GuzzleException $e) {
+            throw new PineconeException('Failed to delete assistant file: ' . $e->getMessage(), 0, $e);
+        }
     }
 }

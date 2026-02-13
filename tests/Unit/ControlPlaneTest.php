@@ -10,7 +10,6 @@ use GuzzleHttp\Psr7\Request;
 use Mbvb1223\Pinecone\Control\ControlPlane;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +31,115 @@ class ControlPlaneTest extends TestCase
         Mockery::close();
     }
 
-    // ===== Index control plane method tests =====
+    // ===== Index control plane success tests =====
+
+    public function testListIndexesSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"indexes":[{"name":"idx1"},{"name":"idx2"}]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->listIndexes();
+        $this->assertCount(2, $result);
+        $this->assertEquals('idx1', $result[0]['name']);
+    }
+
+    public function testCreateIndexSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"test-index","dimension":1536,"metric":"cosine"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/indexes', Mockery::on(function ($arg) {
+                $json = $arg['json'];
+
+                return $json['name'] === 'test-index'
+                    && $json['dimension'] === 1536
+                    && $json['metric'] === 'cosine';
+            }))
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createIndex('test-index', [
+            'dimension' => 1536,
+            'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']],
+        ]);
+        $this->assertEquals('test-index', $result['name']);
+    }
+
+    public function testCreateIndexPreservesOptionalFields(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"test-index","deletion_protection":"enabled"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/indexes', Mockery::on(function ($arg) {
+                $json = $arg['json'];
+
+                return $json['name'] === 'test-index'
+                    && $json['deletion_protection'] === 'enabled'
+                    && $json['vector_type'] === 'float';
+            }))
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createIndex('test-index', [
+            'dimension' => 1536,
+            'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']],
+            'deletion_protection' => 'enabled',
+            'vector_type' => 'float',
+        ]);
+        $this->assertEquals('enabled', $result['deletion_protection']);
+    }
+
+    public function testDescribeIndexSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"test-index","host":"test-host.pinecone.io"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes/test-index')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->describeIndex('test-index');
+        $this->assertEquals('test-index', $result['name']);
+        $this->assertEquals('test-host.pinecone.io', $result['host']);
+    }
+
+    public function testDeleteIndexSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(202);
+        $response->shouldReceive('getBody->getContents')->andReturn('');
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->with('/indexes/test-index')
+            ->andReturn($response);
+
+        $this->controlPlane->deleteIndex('test-index');
+        $this->assertTrue(true);
+    }
+
+    public function testConfigureIndexSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"test-index","deletion_protection":"enabled"}');
+        $this->httpClientMock->shouldReceive('patch')
+            ->once()
+            ->with('/indexes/test-index', ['json' => ['deletion_protection' => 'enabled']])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->configureIndex('test-index', ['deletion_protection' => 'enabled']);
+        $this->assertEquals('enabled', $result['deletion_protection']);
+    }
+
+    // ===== Index control plane error tests =====
 
     public function testListIndexesThrowsException(): void
     {
@@ -51,12 +158,7 @@ class ControlPlaneTest extends TestCase
     {
         $this->httpClientMock->shouldReceive('post')
             ->once()
-            ->with('/indexes', ['json' => [
-                'name' => 'test-index',
-                'dimension' => 1536,
-                'metric' => 'cosine',
-                'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']]
-            ]])
+            ->with('/indexes', Mockery::any())
             ->andThrow(new RequestException('Creation failed', new Request('POST', '/indexes')));
 
         $this->expectException(PineconeException::class);
@@ -64,7 +166,7 @@ class ControlPlaneTest extends TestCase
 
         $this->controlPlane->createIndex('test-index', [
             'dimension' => 1536,
-            'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']]
+            'spec' => ['serverless' => ['cloud' => 'aws', 'region' => 'us-east-1']],
         ]);
     }
 
@@ -81,7 +183,7 @@ class ControlPlaneTest extends TestCase
         $this->controlPlane->createForModel('test-index', [
             'cloud' => 'aws',
             'region' => 'us-east-1',
-            'embed' => ['model' => 'text-embedding-ada-002']
+            'embed' => ['model' => 'text-embedding-ada-002'],
         ]);
     }
 
@@ -238,8 +340,8 @@ class ControlPlaneTest extends TestCase
     {
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/restore?status=active')
-            ->andThrow(new RequestException('List failed', new Request('GET', '/restore')));
+            ->with('/restore-jobs', ['query' => ['status' => 'active']])
+            ->andThrow(new RequestException('List failed', new Request('GET', '/restore-jobs')));
 
         $this->expectException(PineconeException::class);
         $this->expectExceptionMessage('Failed to list restore jobs: List failed');
@@ -251,8 +353,8 @@ class ControlPlaneTest extends TestCase
     {
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/restore')
-            ->andThrow(new RequestException('List failed', new Request('GET', '/restore')));
+            ->with('/restore-jobs', [])
+            ->andThrow(new RequestException('List failed', new Request('GET', '/restore-jobs')));
 
         $this->expectException(PineconeException::class);
         $this->expectExceptionMessage('Failed to list restore jobs: List failed');
@@ -264,8 +366,8 @@ class ControlPlaneTest extends TestCase
     {
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/restore/job-123')
-            ->andThrow(new RequestException('Job not found', new Request('GET', '/restore/job-123')));
+            ->with('/restore-jobs/job-123')
+            ->andThrow(new RequestException('Job not found', new Request('GET', '/restore-jobs/job-123')));
 
         $this->expectException(PineconeException::class);
         $this->expectExceptionMessage('Failed to describe restore job: job-123. Job not found');
@@ -338,6 +440,344 @@ class ControlPlaneTest extends TestCase
         $this->expectExceptionMessage('Failed to delete assistant: test-assistant. Delete failed');
 
         $this->controlPlane->deleteAssistant('test-assistant');
+    }
+
+    // ===== ControlPlane success tests for new/fixed methods =====
+
+    public function testCreateForModelSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"model-index","host":"model-host.io"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/indexes/create-for-model', Mockery::on(function ($arg) {
+                $json = $arg['json'];
+
+                return $json['name'] === 'model-index'
+                    && $json['cloud'] === 'aws';
+            }))
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createForModel('model-index', ['cloud' => 'aws', 'region' => 'us-east-1']);
+        $this->assertEquals('model-index', $result['name']);
+    }
+
+    public function testCreateCollectionSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"my-collection","status":"Initializing"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/collections', ['json' => ['name' => 'my-collection', 'source' => 'my-index']])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createCollection(['name' => 'my-collection', 'source' => 'my-index']);
+        $this->assertEquals('my-collection', $result['name']);
+    }
+
+    public function testListCollectionsSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"collections":[{"name":"col1"},{"name":"col2"}]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/collections')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->listCollections();
+        $this->assertCount(2, $result);
+    }
+
+    public function testDescribeCollectionSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"col1","status":"Ready"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/collections/col1')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->describeCollection('col1');
+        $this->assertEquals('Ready', $result['status']);
+    }
+
+    public function testDeleteCollectionSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(202);
+        $response->shouldReceive('getBody->getContents')->andReturn('');
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->with('/collections/col1')
+            ->andReturn($response);
+
+        $this->controlPlane->deleteCollection('col1');
+        $this->assertTrue(true);
+    }
+
+    public function testCreateBackupSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"backup_id":"bk-123"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/backups', ['json' => ['source_index' => 'my-index']])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createBackup(['source_index' => 'my-index']);
+        $this->assertEquals('bk-123', $result['backup_id']);
+    }
+
+    public function testListBackupsSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[{"id":"bk1"},{"id":"bk2"}]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/backups')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->listBackups();
+        $this->assertCount(2, $result);
+        $this->assertEquals('bk1', $result[0]['id']);
+    }
+
+    public function testDescribeBackupSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"id":"bk-123","status":"Ready"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/backups/bk-123')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->describeBackup('bk-123');
+        $this->assertEquals('Ready', $result['status']);
+    }
+
+    public function testDeleteBackupSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(202);
+        $response->shouldReceive('getBody->getContents')->andReturn('');
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->with('/backups/bk-123')
+            ->andReturn($response);
+
+        $this->controlPlane->deleteBackup('bk-123');
+        $this->assertTrue(true);
+    }
+
+    // ===== createIndexFromBackup =====
+
+    public function testCreateIndexFromBackupSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"restored-index","status":"Initializing"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/backups/bk-123/create-index', ['json' => ['name' => 'restored-index']])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createIndexFromBackup('bk-123', ['name' => 'restored-index']);
+        $this->assertEquals('restored-index', $result['name']);
+    }
+
+    public function testCreateIndexFromBackupThrowsException(): void
+    {
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/backups/bk-123/create-index', Mockery::any())
+            ->andThrow(new RequestException('Restore failed', new Request('POST', '/backups/bk-123/create-index')));
+
+        $this->expectException(PineconeException::class);
+        $this->expectExceptionMessage('Failed to create index from backup: bk-123. Restore failed');
+
+        $this->controlPlane->createIndexFromBackup('bk-123', ['name' => 'test']);
+    }
+
+    public function testCreateIndexFromBackupUrlEncoding(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"restored"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/backups/bk+123/create-index', Mockery::any())
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createIndexFromBackup('bk 123', ['name' => 'restored']);
+        $this->assertEquals('restored', $result['name']);
+    }
+
+    // ===== Restore jobs =====
+
+    public function testListRestoreJobsSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[{"id":"rj1","status":"Completed"}]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/restore-jobs', [])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->listRestoreJobs();
+        $this->assertCount(1, $result);
+        $this->assertEquals('rj1', $result[0]['id']);
+    }
+
+    public function testListRestoreJobsWithParamsSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/restore-jobs', ['query' => ['limit' => 5]])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->listRestoreJobs(['limit' => 5]);
+        $this->assertEmpty($result);
+    }
+
+    public function testDescribeRestoreJobSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"id":"rj-123","status":"Completed"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/restore-jobs/rj-123')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->describeRestoreJob('rj-123');
+        $this->assertEquals('Completed', $result['status']);
+    }
+
+    // ===== Assistant control plane success tests =====
+
+    public function testCreateAssistantSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(201);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"my-assistant","status":"Initializing"}');
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/assistants', ['json' => ['name' => 'my-assistant']])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->createAssistant(['name' => 'my-assistant']);
+        $this->assertEquals('my-assistant', $result['name']);
+    }
+
+    public function testListAssistantsSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"assistants":[{"name":"ast1"},{"name":"ast2"}]}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/assistants')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->listAssistants();
+        $this->assertCount(2, $result);
+    }
+
+    public function testDescribeAssistantSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"my-assistant","status":"Ready"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/assistants/my-assistant')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->describeAssistant('my-assistant');
+        $this->assertEquals('Ready', $result['status']);
+    }
+
+    public function testUpdateAssistantSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"my-assistant","description":"Updated"}');
+        $this->httpClientMock->shouldReceive('patch')
+            ->once()
+            ->with('/assistants/my-assistant', ['json' => ['description' => 'Updated']])
+            ->andReturn($response);
+
+        $result = $this->controlPlane->updateAssistant('my-assistant', ['description' => 'Updated']);
+        $this->assertEquals('Updated', $result['description']);
+    }
+
+    public function testDeleteAssistantSuccess(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(202);
+        $response->shouldReceive('getBody->getContents')->andReturn('');
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->with('/assistants/my-assistant')
+            ->andReturn($response);
+
+        $this->controlPlane->deleteAssistant('my-assistant');
+        $this->assertTrue(true);
+    }
+
+    // ===== URL encoding tests =====
+
+    public function testDescribeIndexUrlEncodesName(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"my index"}');
+        $this->httpClientMock->shouldReceive('get')
+            ->once()
+            ->with('/indexes/my+index')
+            ->andReturn($response);
+
+        $result = $this->controlPlane->describeIndex('my index');
+        $this->assertEquals('my index', $result['name']);
+    }
+
+    public function testDeleteIndexUrlEncodesName(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(202);
+        $response->shouldReceive('getBody->getContents')->andReturn('');
+        $this->httpClientMock->shouldReceive('delete')
+            ->once()
+            ->with('/indexes/my+index')
+            ->andReturn($response);
+
+        $this->controlPlane->deleteIndex('my index');
+        $this->assertTrue(true);
+    }
+
+    public function testConfigureIndexUrlEncodesName(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"name":"my index"}');
+        $this->httpClientMock->shouldReceive('patch')
+            ->once()
+            ->with('/indexes/my+index', Mockery::any())
+            ->andReturn($response);
+
+        $result = $this->controlPlane->configureIndex('my index', ['replicas' => 2]);
+        $this->assertEquals('my index', $result['name']);
     }
 
     public function testResponseIs500(): void
