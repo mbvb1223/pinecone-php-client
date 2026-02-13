@@ -65,7 +65,7 @@ class AssistantClient
      * Upload a file to the assistant's knowledge base.
      *
      * @param string $filePath Path to the file to upload.
-     * @return array The upload response.
+     * @return array<string, mixed> The upload response.
      */
     public function uploadFile(string $filePath): array
     {
@@ -103,7 +103,7 @@ class AssistantClient
     /**
      * List files uploaded to the assistant.
      *
-     * @return array The list of files.
+     * @return array<string, mixed> The list of files.
      */
     public function listFiles(): array
     {
@@ -121,7 +121,7 @@ class AssistantClient
      * Describe a specific file uploaded to the assistant.
      *
      * @param string $fileId The file ID.
-     * @return array The file details.
+     * @return array<string, mixed> The file details.
      */
     public function describeFile(string $fileId): array
     {

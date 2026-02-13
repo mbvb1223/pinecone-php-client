@@ -13,6 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 
 trait HandlesApiResponse
 {
+    /** @return array<string, mixed> */
     private function handleResponse(ResponseInterface $response): array
     {
         $statusCode = $response->getStatusCode();
