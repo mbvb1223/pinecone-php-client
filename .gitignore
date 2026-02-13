@@ -18,6 +18,7 @@ tests/Reports/
 
 # Environment variables
 .env
+.env.test
 
 # Cache
 .php-cs-fixer.cache
