@@ -7,6 +7,7 @@ namespace Mbvb1223\Pinecone\Utils;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeAuthException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Errors\PineconeRateLimitException;
 use Mbvb1223\Pinecone\Errors\PineconeTimeoutException;
 use Psr\Http\Message\ResponseInterface;
 
@@ -30,6 +31,10 @@ trait HandlesApiResponse
 
             if ($statusCode === 408 || $statusCode === 504) {
                 throw new PineconeTimeoutException($message, $statusCode);
+            }
+
+            if ($statusCode === 429) {
+                throw new PineconeRateLimitException($message, $statusCode);
             }
 
             throw new PineconeApiException($message, $statusCode, $data);

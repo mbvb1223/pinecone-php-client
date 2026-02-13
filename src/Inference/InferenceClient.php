@@ -6,9 +6,9 @@ namespace Mbvb1223\Pinecone\Inference;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeException;
 use Mbvb1223\Pinecone\Errors\PineconeValidationException;
+use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class InferenceClient
@@ -92,7 +92,7 @@ class InferenceClient
         int $topN = 0,
         bool $returnDocuments = true,
         array $rankFields = [],
-        array $parameters = []
+        array $parameters = [],
     ): array {
         if (empty($model)) {
             throw new PineconeValidationException('Model name is required for reranking.');

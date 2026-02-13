@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Integration;
+namespace Mbvb1223\Pinecone\Tests\Integration;
 
 use Mbvb1223\Pinecone\Tests\Integration\Base\BaseIntegrationTestCase;
 
@@ -18,9 +18,9 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
             'spec' => [
                 'serverless' => [
                     'cloud' => 'aws',
-                    'region' => 'us-east-1'
-                ]
-            ]
+                    'region' => 'us-east-1',
+                ],
+            ],
         ]);
         $this->waitForIndexReady($indexName);
 
@@ -30,13 +30,13 @@ class IndexNamespaceTest extends BaseIntegrationTestCase
             [
                 'id' => 'vec1',
                 'values' => array_fill(0, 1024, 0.5),
-                'metadata' => ['category' => 'test']
+                'metadata' => ['category' => 'test'],
             ],
             [
                 'id' => 'vec2',
                 'values' => array_fill(0, 1024, 0.8),
-                'metadata' => ['category' => 'test']
-            ]
+                'metadata' => ['category' => 'test'],
+            ],
         ]);
         $vectors = $namespace->fetch(['vec1', 'vec2']);
         $this->assertCount(2, $vectors);

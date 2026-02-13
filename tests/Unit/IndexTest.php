@@ -198,7 +198,10 @@ class IndexTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"vectors":{"v1":{"id":"v1","values":[0.1]}}}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with(Mockery::pattern('/\/vectors\/fetch\?ids=v1/'))
+            ->with('/vectors/fetch', Mockery::on(function ($arg) {
+                return $arg['query']['ids'] === ['v1']
+                    && !isset($arg['query']['namespace']);
+            }))
             ->andReturn($response);
 
         $result = $this->index->fetch(['v1']);
@@ -212,7 +215,9 @@ class IndexTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"vectors":[{"id":"v1"},{"id":"v2"}]}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with(Mockery::pattern('/\/vectors\/list/'))
+            ->with('/vectors/list', Mockery::on(function ($arg) {
+                return $arg['query']['prefix'] === 'v';
+            }))
             ->andReturn($response);
 
         $result = $this->index->listVectorIds(prefix: 'v');
@@ -254,7 +259,7 @@ class IndexTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"data":[{"id":"imp1"}]}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/bulk/imports')
+            ->with('/bulk/imports', [])
             ->andReturn($response);
 
         $result = $this->index->listImports();
@@ -268,7 +273,9 @@ class IndexTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"data":[]}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/bulk/imports?limit=5')
+            ->with('/bulk/imports', Mockery::on(function ($arg) {
+                return $arg['query']['limit'] === 5;
+            }))
             ->andReturn($response);
 
         $result = $this->index->listImports(limit: 5);
@@ -282,7 +289,9 @@ class IndexTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"data":[]}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/bulk/imports?paginationToken=token123')
+            ->with('/bulk/imports', Mockery::on(function ($arg) {
+                return $arg['query']['paginationToken'] === 'token123';
+            }))
             ->andReturn($response);
 
         $result = $this->index->listImports(paginationToken: 'token123');
@@ -296,7 +305,10 @@ class IndexTest extends TestCase
         $response->shouldReceive('getBody->getContents')->andReturn('{"data":[],"pagination":{"next":"token456"}}');
         $this->httpClientMock->shouldReceive('get')
             ->once()
-            ->with('/bulk/imports?limit=10&paginationToken=token123')
+            ->with('/bulk/imports', Mockery::on(function ($arg) {
+                return $arg['query']['limit'] === 10
+                    && $arg['query']['paginationToken'] === 'token123';
+            }))
             ->andReturn($response);
 
         $result = $this->index->listImports(limit: 10, paginationToken: 'token123');

@@ -7,6 +7,7 @@ namespace Mbvb1223\Pinecone\Tests\Unit;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeAuthException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Errors\PineconeRateLimitException;
 use Mbvb1223\Pinecone\Errors\PineconeTimeoutException;
 use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 use Mockery;
@@ -156,13 +157,22 @@ class HandlesApiResponseTest extends TestCase
         $this->handler->handle($response);
     }
 
-    public function testStatus429ThrowsApiException(): void
+    public function testStatus429ThrowsRateLimitException(): void
     {
         $response = $this->mockResponse(429, '{"message":"Rate limited"}');
 
-        $this->expectException(PineconeApiException::class);
+        $this->expectException(PineconeRateLimitException::class);
         $this->expectExceptionMessage('Rate limited');
         $this->expectExceptionCode(429);
+
+        $this->handler->handle($response);
+    }
+
+    public function testRateLimitExceptionExtendsPineconeException(): void
+    {
+        $response = $this->mockResponse(429, '{"message":"Rate limited"}');
+
+        $this->expectException(PineconeException::class);
 
         $this->handler->handle($response);
     }

@@ -91,7 +91,7 @@ class AssistantClientTest extends TestCase
 
         $result = $this->assistant->chat(
             [['role' => 'user', 'content' => 'Hi']],
-            ['model' => 'gpt-4']
+            ['model' => 'gpt-4'],
         );
         $this->assertEquals('ok', $result['message']['content']);
     }
@@ -302,5 +302,28 @@ class AssistantClientTest extends TestCase
 
         $result = $assistant->listFiles();
         $this->assertEmpty($result['files']);
+    }
+
+    // ===== chat with multiple messages =====
+
+    public function testChatWithMultipleMessages(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"message":{"content":"response"}}');
+
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/assistant/chat/test-assistant/completions', Mockery::on(function ($arg) {
+                return count($arg['json']['messages']) === 3;
+            }))
+            ->andReturn($response);
+
+        $result = $this->assistant->chat([
+            ['role' => 'user', 'content' => 'Hi'],
+            ['role' => 'assistant', 'content' => 'Hello!'],
+            ['role' => 'user', 'content' => 'How are you?'],
+        ]);
+        $this->assertEquals('response', $result['message']['content']);
     }
 }

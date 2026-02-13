@@ -6,9 +6,9 @@ namespace Mbvb1223\Pinecone\Assistant;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeException;
 use Mbvb1223\Pinecone\Errors\PineconeValidationException;
+use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class AssistantClient

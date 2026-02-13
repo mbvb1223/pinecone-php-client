@@ -519,6 +519,7 @@ try {
 | `PineconeApiException` | HTTP errors from the API (includes status code and response data) |
 | `PineconeAuthException` | Authentication failures |
 | `PineconeValidationException` | Input validation errors |
+| `PineconeRateLimitException` | Rate limit errors (HTTP 429) |
 | `PineconeTimeoutException` | Request timeout errors |
 
 ## Code Coverage
