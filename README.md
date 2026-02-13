@@ -1,6 +1,6 @@
 # Pinecone PHP Client
 
-A PHP SDK for [Pinecone](https://www.pinecone.io) vector database
+A PHP SDK for [Pinecone](https://www.pinecone.io) vector database.
 
 ## Installation
 
