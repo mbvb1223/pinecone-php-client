@@ -224,6 +224,14 @@ class InferenceClientTest extends TestCase
         $this->assertArrayHasKey('data', $result);
     }
 
+    public function testRerankNegativeTopNThrows(): void
+    {
+        $this->expectException(PineconeValidationException::class);
+        $this->expectExceptionMessage('topN must be a non-negative integer.');
+
+        $this->client->rerank('model', 'query', [['text' => 'doc']], topN: -1);
+    }
+
     public function testRerankEmptyModelThrows(): void
     {
         $this->expectException(PineconeValidationException::class);

@@ -93,7 +93,8 @@ class Index
     public function cancelImport(string $importId): void
     {
         try {
-            $this->httpClient->delete('/bulk/imports/' . urlencode($importId));
+            $response = $this->httpClient->delete('/bulk/imports/' . urlencode($importId));
+            $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to cancel import: ' . $e->getMessage(), 0, $e);
         }
@@ -130,9 +131,10 @@ class Index
     public function deleteNamespace(string $namespace): void
     {
         try {
-            $this->httpClient->post('/vectors/delete', [
+            $response = $this->httpClient->post('/vectors/delete', [
                 'json' => ['deleteAll' => true, 'namespace' => $namespace],
             ]);
+            $this->handleResponse($response);
         } catch (GuzzleException $e) {
             throw new PineconeException('Failed to delete namespace: ' . $e->getMessage(), 0, $e);
         }

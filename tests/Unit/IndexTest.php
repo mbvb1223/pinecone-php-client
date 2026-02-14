@@ -140,10 +140,13 @@ class IndexTest extends TestCase
 
     public function testDeleteNamespaceSuccess(): void
     {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
         $this->httpClientMock->shouldReceive('post')
             ->once()
             ->with('/vectors/delete', ['json' => ['deleteAll' => true, 'namespace' => 'ns1']])
-            ->andReturn(Mockery::mock(ResponseInterface::class));
+            ->andReturn($response);
 
         $this->index->deleteNamespace('ns1');
         $this->assertTrue(true);
@@ -366,10 +369,13 @@ class IndexTest extends TestCase
 
     public function testCancelImportSuccess(): void
     {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
         $this->httpClientMock->shouldReceive('delete')
             ->once()
             ->with('/bulk/imports/imp-123')
-            ->andReturn(Mockery::mock(ResponseInterface::class));
+            ->andReturn($response);
 
         $this->index->cancelImport('imp-123');
         $this->assertTrue(true);
@@ -377,10 +383,13 @@ class IndexTest extends TestCase
 
     public function testCancelImportUrlEncodes(): void
     {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{}');
         $this->httpClientMock->shouldReceive('delete')
             ->once()
             ->with('/bulk/imports/imp+123')
-            ->andReturn(Mockery::mock(ResponseInterface::class));
+            ->andReturn($response);
 
         $this->index->cancelImport('imp 123');
         $this->assertTrue(true);
