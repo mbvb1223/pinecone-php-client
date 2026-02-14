@@ -17,7 +17,7 @@ function indexNamespaceOperations()
     // Vector operations
     $vectors = [
         ['id' => 'vec1', 'values' => array_fill(0, 1024, 0.5),],
-        ['id' => 'vec2', 'values' => array_fill(0, 1024, 0.5),]
+        ['id' => 'vec2', 'values' => array_fill(0, 1024, 0.5),],
     ];
 
     $namespace->upsert($vectors);

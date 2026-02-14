@@ -17,6 +17,7 @@ class ControlPlane
     {
     }
 
+    /** @return array<int, array<string, mixed>> */
     public function listIndexes(): array
     {
         try {
@@ -29,6 +30,10 @@ class ControlPlane
         }
     }
 
+    /**
+     * @param array{dimension?: int, metric?: string, spec?: array<string, mixed>, ...} $requestData
+     * @return array<string, mixed>
+     */
     public function createIndex(string $name, array $requestData): array
     {
         try {
@@ -42,6 +47,10 @@ class ControlPlane
         }
     }
 
+    /**
+     * @param array{cloud: string, region: string, embed: array{model: string, ...}, ...} $requestData
+     * @return array<string, mixed>
+     */
     public function createForModel(string $name, array $requestData): array
     {
         try {
@@ -55,6 +64,7 @@ class ControlPlane
         }
     }
 
+    /** @return array<string, mixed> */
     public function describeIndex(string $name): array
     {
         try {
@@ -78,6 +88,10 @@ class ControlPlane
         }
     }
 
+    /**
+     * @param array<string, mixed> $requestData
+     * @return array<string, mixed>
+     */
     public function configureIndex(string $name, array $requestData): array
     {
         try {
@@ -91,6 +105,11 @@ class ControlPlane
     }
 
     // Collection methods
+
+    /**
+     * @param array{name: string, source: string} $config
+     * @return array<string, mixed>
+     */
     public function createCollection(array $config): array
     {
         try {
@@ -102,6 +121,7 @@ class ControlPlane
         }
     }
 
+    /** @return array<int, array<string, mixed>> */
     public function listCollections(): array
     {
         try {
@@ -114,6 +134,7 @@ class ControlPlane
         }
     }
 
+    /** @return array<string, mixed> */
     public function describeCollection(string $name): array
     {
         try {
@@ -138,6 +159,11 @@ class ControlPlane
     }
 
     // Backup methods
+
+    /**
+     * @param array{source_index_name: string, name?: string, description?: string} $config
+     * @return array<string, mixed>
+     */
     public function createBackup(array $config): array
     {
         try {
@@ -149,6 +175,7 @@ class ControlPlane
         }
     }
 
+    /** @return array<int, array<string, mixed>> */
     public function listBackups(): array
     {
         try {
@@ -161,6 +188,7 @@ class ControlPlane
         }
     }
 
+    /** @return array<string, mixed> */
     public function describeBackup(string $id): array
     {
         try {
@@ -185,6 +213,11 @@ class ControlPlane
     }
 
     // Restore methods
+
+    /**
+     * @param array{name: string, ...} $config
+     * @return array<string, mixed>
+     */
     public function createIndexFromBackup(string $backupId, array $config): array
     {
         try {
@@ -197,6 +230,10 @@ class ControlPlane
         }
     }
 
+    /**
+     * @param array<string, mixed> $params
+     * @return array<int, array<string, mixed>>
+     */
     public function listRestoreJobs(array $params = []): array
     {
         try {
@@ -210,6 +247,7 @@ class ControlPlane
         }
     }
 
+    /** @return array<string, mixed> */
     public function describeRestoreJob(string $id): array
     {
         try {
@@ -223,6 +261,11 @@ class ControlPlane
     }
 
     // Assistant methods
+
+    /**
+     * @param array{name: string, instructions?: string, metadata?: array<string, mixed>} $config
+     * @return array<string, mixed>
+     */
     public function createAssistant(array $config): array
     {
         try {
@@ -234,6 +277,7 @@ class ControlPlane
         }
     }
 
+    /** @return array<int, array<string, mixed>> */
     public function listAssistants(): array
     {
         try {
@@ -246,6 +290,7 @@ class ControlPlane
         }
     }
 
+    /** @return array<string, mixed> */
     public function describeAssistant(string $name): array
     {
         try {
@@ -258,6 +303,10 @@ class ControlPlane
         }
     }
 
+    /**
+     * @param array{instructions?: string, metadata?: array<string, mixed>} $config
+     * @return array<string, mixed>
+     */
     public function updateAssistant(string $name, array $config): array
     {
         try {

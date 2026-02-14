@@ -38,8 +38,8 @@ class IndexTest extends BaseIntegrationTestCase
         $tag = 'test_' . bin2hex(random_bytes(5));
         $index = $this->pinecone->configureIndex($indexName, [
             'tags' => [
-                'environment' => $tag
-            ]
+                'environment' => $tag,
+            ],
         ]);
         $this->assertIsArray($index);
         $this->assertSame($tag, $index['tags']['environment']);
@@ -54,13 +54,13 @@ class IndexTest extends BaseIntegrationTestCase
                 'model' => 'multilingual-e5-large',
                 'metric' => 'cosine',
                 'field_map' => [
-                    'text' => 'content'
-                ]
+                    'text' => 'content',
+                ],
             ],
             'deletion_protection' => 'disabled',
             'tags' => [
-                'environment' => $tag
-            ]
+                'environment' => $tag,
+            ],
         ]);
         $this->assertIsArray($index);
         $this->assertSame($tag, $index['tags']['environment']);
@@ -72,6 +72,7 @@ class IndexTest extends BaseIntegrationTestCase
     {
         $indexName = BaseIntegrationTestCase::INDEX_NAMES[4];
         $this->createIndexName($indexName);
+        $this->waitForIndexReady($indexName);
         $index = $this->pinecone->index($indexName);
         $result = $index->describeIndexStats();
         $this->assertIsArray($result);
@@ -110,9 +111,9 @@ class IndexTest extends BaseIntegrationTestCase
             'spec' => [
                 'serverless' => [
                     'cloud' => 'aws',
-                    'region' => 'us-east-1'
-                ]
-            ]
+                    'region' => 'us-east-1',
+                ],
+            ],
         ]);
     }
 }

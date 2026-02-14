@@ -167,7 +167,7 @@ class InferenceClientTest extends TestCase
         $result = $this->client->rerank(
             'bge-reranker-v2-m3',
             'What is AI?',
-            [['text' => 'AI is cool'], ['text' => 'Something else']]
+            [['text' => 'AI is cool'], ['text' => 'Something else']],
         );
         $this->assertArrayHasKey('data', $result);
     }
@@ -287,5 +287,62 @@ class InferenceClientTest extends TestCase
         $this->expectExceptionMessage('Failed to list models: Error');
 
         $this->client->listModels();
+    }
+
+    // ===== rerank edge cases =====
+
+    public function testRerankWithReturnDocumentsFalse(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[]}');
+
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/rerank', Mockery::on(function ($arg) {
+                return $arg['json']['return_documents'] === false;
+            }))
+            ->andReturn($response);
+
+        $result = $this->client->rerank('model', 'query', [['text' => 'doc']], returnDocuments: false);
+        $this->assertArrayHasKey('data', $result);
+    }
+
+    public function testRerankTopNZeroOmitsKey(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[]}');
+
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/rerank', Mockery::on(function ($arg) {
+                return !isset($arg['json']['top_n']);
+            }))
+            ->andReturn($response);
+
+        $result = $this->client->rerank('model', 'query', [['text' => 'doc']], topN: 0);
+        $this->assertArrayHasKey('data', $result);
+    }
+
+    // ===== embed mixed inputs =====
+
+    public function testEmbedMixedInputs(): void
+    {
+        $response = Mockery::mock(ResponseInterface::class);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
+        $response->shouldReceive('getBody->getContents')->andReturn('{"data":[]}');
+
+        $this->httpClientMock->shouldReceive('post')
+            ->once()
+            ->with('/embed', Mockery::on(function ($arg) {
+                $inputs = $arg['json']['inputs'];
+
+                return $inputs === [['text' => 'hello'], ['text' => 'world', 'extra' => 'data']];
+            }))
+            ->andReturn($response);
+
+        $result = $this->client->embed('model', ['hello', ['text' => 'world', 'extra' => 'data']]);
+        $this->assertArrayHasKey('data', $result);
     }
 }

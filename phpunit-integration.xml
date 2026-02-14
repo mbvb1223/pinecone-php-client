@@ -8,15 +8,12 @@
          failOnRisky="true"
          failOnWarning="true"
          stopOnFailure="false">
+    <extensions>
+        <bootstrap class="Mbvb1223\Pinecone\Tests\Extension\SetupIntegration"/>
+    </extensions>
     <testsuites>
-        <testsuite name="Unit Tests">
-            <directory>tests/Unit</directory>
-        </testsuite>
         <testsuite name="Integration Tests">
             <directory>tests/Integration</directory>
-        </testsuite>
-        <testsuite name="Extension Tests">
-            <directory>tests/Extension</directory>
         </testsuite>
     </testsuites>
 
