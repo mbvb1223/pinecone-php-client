@@ -106,6 +106,10 @@ class InferenceClient
             throw new PineconeValidationException('At least one document is required for reranking.');
         }
 
+        if ($topN < 0) {
+            throw new PineconeValidationException('topN must be a non-negative integer.');
+        }
+
         try {
             $payload = [
                 'model' => $model,

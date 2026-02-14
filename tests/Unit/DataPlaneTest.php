@@ -396,6 +396,16 @@ class DataPlaneTest extends TestCase
         $this->dataPlane->listVectorIds();
     }
 
+    // ===== query validation =====
+
+    public function testQueryWithNoVectorOrIdThrowsValidationException(): void
+    {
+        $this->expectException(PineconeValidationException::class);
+        $this->expectExceptionMessage('At least one of "vector", "id", or "sparseVector" must be provided for query.');
+
+        $this->dataPlane->query();
+    }
+
     // ===== query with filter =====
 
     public function testQueryWithFilter(): void

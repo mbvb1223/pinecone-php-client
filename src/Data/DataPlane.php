@@ -56,6 +56,10 @@ class DataPlane
         bool $includeMetadata = true,
         ?array $sparseVector = null,
     ): array {
+        if (empty($vector) && $id === null && $sparseVector === null) {
+            throw new PineconeValidationException('At least one of "vector", "id", or "sparseVector" must be provided for query.');
+        }
+
         try {
             $payload = [
                 'topK' => $topK,
