@@ -18,6 +18,10 @@ class DataPlane
     {
     }
 
+    /**
+     * @param array<int, array{id: string, values: array<float>, sparseValues?: array{indices: array<int>, values: array<float>}, metadata?: array<string, mixed>}> $vectors
+     * @return array<string, mixed>
+     */
     public function upsert(array $vectors, ?string $namespace = null): array
     {
         try {
@@ -36,6 +40,12 @@ class DataPlane
         }
     }
 
+    /**
+     * @param array<float> $vector
+     * @param array<string, mixed>|null $filter Metadata filter expression
+     * @param array{indices: array<int>, values: array<float>}|null $sparseVector
+     * @return array<string, mixed>
+     */
     public function query(
         array $vector = [],
         ?string $id = null,
@@ -44,7 +54,7 @@ class DataPlane
         ?string $namespace = null,
         bool $includeValues = false,
         bool $includeMetadata = true,
-        ?array $sparseVector = null
+        ?array $sparseVector = null,
     ): array {
         try {
             $payload = [
@@ -83,6 +93,10 @@ class DataPlane
         }
     }
 
+    /**
+     * @param array<int, string> $ids
+     * @return array<string, array<string, mixed>>
+     */
     public function fetch(array $ids, ?string $namespace = null): array
     {
         if (empty($ids)) {
@@ -90,11 +104,15 @@ class DataPlane
         }
 
         try {
-            $idQueries = implode('&', array_map(fn ($id) => 'ids=' . urlencode((string) $id), $ids));
+            // Pinecone expects repeated query params (ids=vec1&ids=vec2),
+            // not PHP-style array params (ids[0]=vec1&ids[1]=vec2),
+            // so we build the query string manually.
+            $query = implode('&', array_map(fn ($id) => 'ids=' . urlencode((string) $id), $ids));
+            if ($namespace !== null) {
+                $query .= '&namespace=' . urlencode($namespace);
+            }
 
-            $namespaceQuery = $namespace !== null ? '&namespace=' . urlencode($namespace) : '';
-
-            $response = $this->httpClient->get('/vectors/fetch?' . $idQueries . $namespaceQuery);
+            $response = $this->httpClient->get('/vectors/fetch?' . $query);
 
             return $this->handleResponse($response)['vectors'] ?? [];
         } catch (GuzzleException $e) {
@@ -102,6 +120,11 @@ class DataPlane
         }
     }
 
+    /**
+     * @param array<int, string> $ids
+     * @param array<string, mixed>|null $filter Metadata filter expression
+     * @return array<string, mixed>
+     */
     public function delete(array $ids = [], ?array $filter = null, ?string $namespace = null, bool $deleteAll = false): array
     {
         try {
@@ -132,6 +155,12 @@ class DataPlane
         }
     }
 
+    /**
+     * @param array<float> $values
+     * @param array<string, mixed>|null $setMetadata
+     * @param array{indices: array<int>, values: array<float>}|null $sparseValues
+     * @return array<string, mixed>
+     */
     public function update(string $id, array $values = [], ?array $setMetadata = null, ?string $namespace = null, ?array $sparseValues = null): array
     {
         try {
@@ -163,6 +192,7 @@ class DataPlane
         }
     }
 
+    /** @return array<string, mixed> */
     public function listVectorIds(?string $prefix = null, ?int $limit = null, ?string $paginationToken = null, ?string $namespace = null): array
     {
         try {
@@ -180,8 +210,8 @@ class DataPlane
                 $params['namespace'] = $namespace;
             }
 
-            $query = !empty($params) ? '?' . http_build_query($params) : '';
-            $response = $this->httpClient->get("/vectors/list{$query}");
+            $options = !empty($params) ? ['query' => $params] : [];
+            $response = $this->httpClient->get('/vectors/list', $options);
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {

@@ -10,9 +10,11 @@ class Configuration
 {
     private readonly string $apiKey;
     private readonly string $controllerHost;
+    /** @var array<string, string> */
     private readonly array $additionalHeaders;
     private readonly int $timeout;
 
+    /** @param array{controllerHost?: string, additionalHeaders?: array<string, string>, timeout?: int}|null $config */
     public function __construct(?string $apiKey = null, ?array $config = null)
     {
         $this->apiKey = $apiKey ?? $this->getApiKeyFromEnvironment();
@@ -46,6 +48,7 @@ class Configuration
         return $this->controllerHost;
     }
 
+    /** @return array<string, string> */
     public function getAdditionalHeaders(): array
     {
         return $this->additionalHeaders;
@@ -56,6 +59,7 @@ class Configuration
         return $this->timeout;
     }
 
+    /** @return array<string, string> */
     public function getDefaultHeaders(): array
     {
         return array_merge([

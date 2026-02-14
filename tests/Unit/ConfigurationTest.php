@@ -235,4 +235,18 @@ class ConfigurationTest extends TestCase
         $config = new Configuration('test-api-key');
         $this->assertEquals([], $config->getAdditionalHeaders());
     }
+
+    public function testUserAgentHeaderContainsVersion(): void
+    {
+        $config = new Configuration('test-api-key');
+        $headers = $config->getDefaultHeaders();
+        $this->assertStringContainsString('pinecone-php-client', $headers['User-Agent']);
+    }
+
+    public function testPineconeApiVersionHeader(): void
+    {
+        $config = new Configuration('test-api-key');
+        $headers = $config->getDefaultHeaders();
+        $this->assertEquals('2025-10', $headers['X-Pinecone-Api-Version']);
+    }
 }

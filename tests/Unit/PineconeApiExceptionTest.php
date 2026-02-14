@@ -7,6 +7,7 @@ namespace Mbvb1223\Pinecone\Tests\Unit;
 use Mbvb1223\Pinecone\Errors\PineconeApiException;
 use Mbvb1223\Pinecone\Errors\PineconeAuthException;
 use Mbvb1223\Pinecone\Errors\PineconeException;
+use Mbvb1223\Pinecone\Errors\PineconeRateLimitException;
 use Mbvb1223\Pinecone\Errors\PineconeTimeoutException;
 use Mbvb1223\Pinecone\Errors\PineconeValidationException;
 use PHPUnit\Framework\TestCase;
@@ -164,6 +165,22 @@ class PineconeApiExceptionTest extends TestCase
         $this->assertEquals(408, $exception->getCode());
     }
 
+    // ===== PineconeRateLimitException detailed tests =====
+
+    public function testRateLimitExceptionConstructor(): void
+    {
+        $exception = new PineconeRateLimitException('Too Many Requests', 429);
+        $this->assertEquals('Too Many Requests', $exception->getMessage());
+        $this->assertEquals(429, $exception->getCode());
+    }
+
+    public function testRateLimitExceptionHierarchy(): void
+    {
+        $exception = new PineconeRateLimitException('Rate limited', 429);
+        $this->assertInstanceOf(PineconeException::class, $exception);
+        $this->assertInstanceOf(\Exception::class, $exception);
+    }
+
     // ===== All exceptions catchable as PineconeException =====
 
     public function testAllExceptionsCaughtAsPineconeException(): void
@@ -173,6 +190,7 @@ class PineconeApiExceptionTest extends TestCase
             new PineconeAuthException('Auth error', 401),
             new PineconeTimeoutException('Timeout', 408),
             new PineconeValidationException('Validation error'),
+            new PineconeRateLimitException('Rate limited', 429),
         ];
 
         foreach ($exceptions as $exception) {

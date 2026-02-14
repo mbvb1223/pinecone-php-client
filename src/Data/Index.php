@@ -20,6 +20,10 @@ class Index
         $this->dataPlane = new DataPlane($httpClient);
     }
 
+    /**
+     * @param array<string, mixed>|null $filter Metadata filter expression
+     * @return array<string, mixed>
+     */
     public function describeIndexStats(?array $filter = null): array
     {
         try {
@@ -37,6 +41,11 @@ class Index
     }
 
     // Import operations
+
+    /**
+     * @param array{uri: string, errorMode?: array{onError?: string}, ...} $requestData
+     * @return array<string, mixed>
+     */
     public function startImport(array $requestData): array
     {
         try {
@@ -48,6 +57,7 @@ class Index
         }
     }
 
+    /** @return array<string, mixed> */
     public function listImports(?int $limit = null, ?string $paginationToken = null): array
     {
         try {
@@ -59,8 +69,8 @@ class Index
                 $params['paginationToken'] = $paginationToken;
             }
 
-            $query = !empty($params) ? '?' . http_build_query($params) : '';
-            $response = $this->httpClient->get("/bulk/imports{$query}");
+            $options = !empty($params) ? ['query' => $params] : [];
+            $response = $this->httpClient->get('/bulk/imports', $options);
 
             return $this->handleResponse($response);
         } catch (GuzzleException $e) {
@@ -68,6 +78,7 @@ class Index
         }
     }
 
+    /** @return array<string, mixed> */
     public function describeImport(string $importId): array
     {
         try {
@@ -89,6 +100,8 @@ class Index
     }
 
     // Namespace operations
+
+    /** @return array<int, string> */
     public function listNamespaces(): array
     {
         try {
@@ -101,6 +114,7 @@ class Index
         }
     }
 
+    /** @return array<string, mixed> */
     public function describeNamespace(string $namespace): array
     {
         try {
@@ -130,11 +144,22 @@ class Index
     }
 
     // Data plane proxy methods
+
+    /**
+     * @param array<int, array{id: string, values: array<float>, sparseValues?: array{indices: array<int>, values: array<float>}, metadata?: array<string, mixed>}> $vectors
+     * @return array<string, mixed>
+     */
     public function upsert(array $vectors, ?string $namespace = null): array
     {
         return $this->dataPlane->upsert($vectors, $namespace);
     }
 
+    /**
+     * @param array<float> $vector
+     * @param array<string, mixed>|null $filter Metadata filter expression
+     * @param array{indices: array<int>, values: array<float>}|null $sparseVector
+     * @return array<string, mixed>
+     */
     public function query(
         array $vector = [],
         ?string $id = null,
@@ -143,26 +168,42 @@ class Index
         ?string $namespace = null,
         bool $includeValues = false,
         bool $includeMetadata = true,
-        ?array $sparseVector = null
+        ?array $sparseVector = null,
     ): array {
         return $this->dataPlane->query($vector, $id, $topK, $filter, $namespace, $includeValues, $includeMetadata, $sparseVector);
     }
 
+    /**
+     * @param array<int, string> $ids
+     * @return array<string, array<string, mixed>>
+     */
     public function fetch(array $ids, ?string $namespace = null): array
     {
         return $this->dataPlane->fetch($ids, $namespace);
     }
 
+    /**
+     * @param array<int, string> $ids
+     * @param array<string, mixed>|null $filter Metadata filter expression
+     * @return array<string, mixed>
+     */
     public function delete(array $ids = [], ?array $filter = null, ?string $namespace = null, bool $deleteAll = false): array
     {
         return $this->dataPlane->delete($ids, $filter, $namespace, $deleteAll);
     }
 
+    /**
+     * @param array<float> $values
+     * @param array<string, mixed>|null $setMetadata
+     * @param array{indices: array<int>, values: array<float>}|null $sparseValues
+     * @return array<string, mixed>
+     */
     public function update(string $id, array $values = [], ?array $setMetadata = null, ?string $namespace = null, ?array $sparseValues = null): array
     {
         return $this->dataPlane->update($id, $values, $setMetadata, $namespace, $sparseValues);
     }
 
+    /** @return array<string, mixed> */
     public function listVectorIds(?string $prefix = null, ?int $limit = null, ?string $paginationToken = null, ?string $namespace = null): array
     {
         return $this->dataPlane->listVectorIds($prefix, $limit, $paginationToken, $namespace);

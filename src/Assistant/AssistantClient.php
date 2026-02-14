@@ -6,9 +6,9 @@ namespace Mbvb1223\Pinecone\Assistant;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeException;
 use Mbvb1223\Pinecone\Errors\PineconeValidationException;
+use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class AssistantClient
@@ -18,6 +18,7 @@ class AssistantClient
     private Client $httpClient;
     private string $assistantName;
 
+    /** @param array<string, mixed> $assistantInfo */
     public function __construct(Configuration $config, string $assistantName, array $assistantInfo = [])
     {
         $host = $assistantInfo['host'] ?? null;
@@ -34,9 +35,9 @@ class AssistantClient
     /**
      * Chat with the assistant.
      *
-     * @param array $messages Array of message objects (e.g., [['role' => 'user', 'content' => 'Hello']]).
-     * @param array $options Additional options for the chat request.
-     * @return array The chat response.
+     * @param array<int, array{role: string, content: string}> $messages Array of message objects.
+     * @param array<string, mixed> $options Additional options for the chat request.
+     * @return array<string, mixed> The chat response.
      */
     public function chat(array $messages, array $options = []): array
     {
@@ -64,7 +65,7 @@ class AssistantClient
      * Upload a file to the assistant's knowledge base.
      *
      * @param string $filePath Path to the file to upload.
-     * @return array The upload response.
+     * @return array<string, mixed> The upload response.
      */
     public function uploadFile(string $filePath): array
     {
@@ -102,7 +103,7 @@ class AssistantClient
     /**
      * List files uploaded to the assistant.
      *
-     * @return array The list of files.
+     * @return array<string, mixed> The list of files.
      */
     public function listFiles(): array
     {
@@ -120,7 +121,7 @@ class AssistantClient
      * Describe a specific file uploaded to the assistant.
      *
      * @param string $fileId The file ID.
-     * @return array The file details.
+     * @return array<string, mixed> The file details.
      */
     public function describeFile(string $fileId): array
     {

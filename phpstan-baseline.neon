@@ -1,0 +1,751 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Assistant\\AssistantClient\:\:__construct\(\) has parameter \$assistantInfo with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Assistant/AssistantClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Assistant\\AssistantClient\:\:chat\(\) has parameter \$messages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Assistant/AssistantClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Assistant\\AssistantClient\:\:chat\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Assistant/AssistantClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Assistant\\AssistantClient\:\:chat\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Assistant/AssistantClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Assistant\\AssistantClient\:\:describeFile\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Assistant/AssistantClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Assistant\\AssistantClient\:\:handleResponse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Assistant/AssistantClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Assistant\\AssistantClient\:\:listFiles\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Assistant/AssistantClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Assistant\\AssistantClient\:\:uploadFile\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Assistant/AssistantClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:configureIndex\(\) has parameter \$requestData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:configureIndex\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createAssistant\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createAssistant\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createBackup\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createBackup\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createCollection\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createCollection\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createForModel\(\) has parameter \$requestData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createForModel\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createIndex\(\) has parameter \$requestData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createIndex\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createIndexFromBackup\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:createIndexFromBackup\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:describeAssistant\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:describeBackup\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:describeCollection\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:describeIndex\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:describeRestoreJob\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:handleResponse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:listAssistants\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:listBackups\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:listCollections\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:listIndexes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:listRestoreJobs\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:listRestoreJobs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:updateAssistant\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Control\\ControlPlane\:\:updateAssistant\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Control/ControlPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:delete\(\) has parameter \$filter with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:delete\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:delete\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:fetch\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:fetch\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:handleResponse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:listVectorIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:query\(\) has parameter \$filter with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:query\(\) has parameter \$sparseVector with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:query\(\) has parameter \$vector with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:query\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:update\(\) has parameter \$setMetadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:update\(\) has parameter \$sparseValues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:update\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:update\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:upsert\(\) has parameter \$vectors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\DataPlane\:\:upsert\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/DataPlane.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:delete\(\) has parameter \$filter with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:delete\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:delete\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:describeImport\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:describeIndexStats\(\) has parameter \$filter with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:describeIndexStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:describeNamespace\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:fetch\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:fetch\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:handleResponse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:listImports\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:listNamespaces\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:listVectorIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:query\(\) has parameter \$filter with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:query\(\) has parameter \$sparseVector with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:query\(\) has parameter \$vector with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:query\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:startImport\(\) has parameter \$requestData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:startImport\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:update\(\) has parameter \$setMetadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:update\(\) has parameter \$sparseValues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:update\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:update\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:upsert\(\) has parameter \$vectors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\Index\:\:upsert\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/Index.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:delete\(\) has parameter \$filter with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:delete\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:delete\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:fetch\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:fetch\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:listVectorIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:query\(\) has parameter \$filter with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:query\(\) has parameter \$sparseVector with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:query\(\) has parameter \$vector with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:query\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:update\(\) has parameter \$setMetadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:update\(\) has parameter \$sparseValues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:update\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:update\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:upsert\(\) has parameter \$vectors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Data\\IndexNamespace\:\:upsert\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Data/IndexNamespace.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Errors\\PineconeApiException\:\:__construct\(\) has parameter \$responseData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Errors/PineconeApiException.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Errors\\PineconeApiException\:\:getResponseData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Errors/PineconeApiException.php
+
+		-
+			message: '#^Property Mbvb1223\\Pinecone\\Errors\\PineconeApiException\:\:\$responseData type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Errors/PineconeApiException.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:embed\(\) has parameter \$inputs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:embed\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:embed\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:handleResponse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:listModels\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:rerank\(\) has parameter \$documents with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:rerank\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:rerank\(\) has parameter \$rankFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Inference\\InferenceClient\:\:rerank\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Inference/InferenceClient.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:createAssistant\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:createAssistant\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:createBackup\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:createBackup\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:createIndexFromBackup\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:createIndexFromBackup\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:describeAssistant\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:describeBackup\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:describeRestoreJob\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:listAssistants\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:listBackups\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:listRestoreJobs\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:listRestoreJobs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:updateAssistant\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Pinecone\:\:updateAssistant\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Pinecone.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Utils\\Configuration\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Utils/Configuration.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Utils\\Configuration\:\:getAdditionalHeaders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Utils/Configuration.php
+
+		-
+			message: '#^Method Mbvb1223\\Pinecone\\Utils\\Configuration\:\:getDefaultHeaders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Utils/Configuration.php
+
+		-
+			message: '#^Property Mbvb1223\\Pinecone\\Utils\\Configuration\:\:\$additionalHeaders type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Utils/Configuration.php

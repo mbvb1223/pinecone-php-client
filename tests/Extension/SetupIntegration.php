@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mbvb1223\Pinecone\Tests\Extension;
 
 use Mbvb1223\Pinecone\Pinecone;

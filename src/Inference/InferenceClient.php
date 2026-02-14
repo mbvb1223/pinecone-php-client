@@ -6,9 +6,9 @@ namespace Mbvb1223\Pinecone\Inference;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Errors\PineconeException;
 use Mbvb1223\Pinecone\Errors\PineconeValidationException;
+use Mbvb1223\Pinecone\Utils\Configuration;
 use Mbvb1223\Pinecone\Utils\HandlesApiResponse;
 
 class InferenceClient
@@ -30,9 +30,9 @@ class InferenceClient
      * Generate embeddings for the given inputs.
      *
      * @param string $model The embedding model to use.
-     * @param array $inputs Array of input objects (e.g., [['text' => 'hello'], ['text' => 'world']]).
-     * @param array $parameters Optional model-specific parameters.
-     * @return array The embedding response.
+     * @param array<int, string|array{text: string}> $inputs Array of input strings or objects with 'text' key.
+     * @param array<string, mixed> $parameters Optional model-specific parameters.
+     * @return array<string, mixed> The embedding response.
      */
     public function embed(string $model, array $inputs, array $parameters = []): array
     {
@@ -78,12 +78,12 @@ class InferenceClient
      *
      * @param string $model The reranking model to use.
      * @param string $query The query to rank against.
-     * @param array $documents The documents to rerank.
+     * @param array<int, array<string, string>> $documents The documents to rerank.
      * @param int $topN Number of top results to return (0 means return all).
      * @param bool $returnDocuments Whether to include documents in the response.
-     * @param array $rankFields Fields to use for ranking.
-     * @param array $parameters Optional model-specific parameters.
-     * @return array The reranking response.
+     * @param array<int, string> $rankFields Fields to use for ranking.
+     * @param array<string, mixed> $parameters Optional model-specific parameters.
+     * @return array<string, mixed> The reranking response.
      */
     public function rerank(
         string $model,
@@ -92,7 +92,7 @@ class InferenceClient
         int $topN = 0,
         bool $returnDocuments = true,
         array $rankFields = [],
-        array $parameters = []
+        array $parameters = [],
     ): array {
         if (empty($model)) {
             throw new PineconeValidationException('Model name is required for reranking.');
@@ -136,6 +136,7 @@ class InferenceClient
         }
     }
 
+    /** @return array<string, mixed> */
     public function listModels(): array
     {
         try {

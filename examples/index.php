@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mbvb1223\Pinecone\Pinecone;
-use Mbvb1223\Pinecone\Utils\Configuration;
 
 function listIndexes()
 {
@@ -14,7 +13,7 @@ function listIndexes()
     echo "Listing indexes...\n";
     $indexes = $pinecone->listIndexes();
     foreach ($indexes as $index) {
-        echo "-" . $index['name'] .  PHP_EOL;
+        echo '-' . $index['name'] .  PHP_EOL;
     }
 }
 
@@ -28,9 +27,9 @@ function createIndex()
         'spec' => [
             'serverless' => [
                 'cloud' => 'aws',
-                'region' => 'us-east-1'
-            ]
-        ]
+                'region' => 'us-east-1',
+            ],
+        ],
     ]);
 
     var_dump($index);
@@ -47,13 +46,13 @@ function createForModel()
             'model' => 'multilingual-e5-large',
             'metric' => 'cosine',
             'field_map' => [
-                'text' => 'content'
-            ]
+                'text' => 'content',
+            ],
         ],
         'deletion_protection' => 'disabled',
         'tags' => [
-            'environment' => 'test'
-        ]
+            'environment' => 'test',
+        ],
     ]);
 
     var_dump($index);
@@ -85,8 +84,8 @@ function configureIndex()
         'tags' => [
             'project' => 'pinecone-php-client',
             'owner' => 'mbvb1223',
-            'environment' => 'development'
-        ]
+            'environment' => 'development',
+        ],
     ]);
 
     var_dump($index);
